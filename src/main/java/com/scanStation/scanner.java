@@ -16,6 +16,7 @@ import java.util.Map;
 
 @Log4j2
 public class scanner {
+
     public static void main(String[] args) {
         String url = args[0];
         String path = args[1];
@@ -96,7 +97,6 @@ public class scanner {
                 if (scb.getResult()) {
                     re.add("++++++++++++vulFind:"+vul.getName()+"-"+scb.toString()+" "+vul.getDetail());
                     log.info("++++++++++++vulFind:"+vul.getName()+"-"+scb.toString()+" "+vul.getDetail());
-//                    System.out.println("vul" + scb.toString());
                 }
             }
         }
@@ -116,10 +116,6 @@ public class scanner {
 
         avitor.setExpression(scb.getExpression());
         Boolean re = avitor.execAvitor();
-        if (re) {
-            //如果漏洞存在
-//            System.out.println( "+++++++++++vulfind"+scb.toString() + vul.getDetail().get("links"));
-        }
         return re;
     }
 }
