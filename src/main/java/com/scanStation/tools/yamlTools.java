@@ -27,10 +27,5 @@ public class yamlTools {
         return vulBean;
     }
 
-//    public static void main(String[] args)  {
-//        vulBean vulBean = new yamlTools("/Users/song/IdeaProjects/skylar_historyVulFinder/src/main/java/com/skylar_Vul/tools/test.yaml").load();
-//        System.out.println(vulBean.toString());
-//    }
-
 
 }
