@@ -100,3 +100,4 @@ fabric.properties
 hs_err_pid*
 src/resources/OK/*
 将删除 src/test/java/org/
+ScanStation.iml
