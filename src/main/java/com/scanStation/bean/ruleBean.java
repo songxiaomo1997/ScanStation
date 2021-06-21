@@ -6,6 +6,7 @@ import org.springframework.util.DigestUtils;
 
 public class ruleBean {
 
+
     @Override
     public String toString() {
         return "rule:{" +
@@ -19,6 +20,9 @@ public class ruleBean {
                 ", payloadlength=" + payloadlength +
                 ", oob='" + oob + '\'' +
                 ", oobflag='" + oobflag + '\'' +
+                ", header=" + header +
+                ", headerscan=" + headerscan +
+                ", type='" + type + '\'' +
                 '}';
     }
 
@@ -42,6 +46,9 @@ public class ruleBean {
     }
 
     public Map<String, String> getHeader() {
+        if (this.header==null){
+            header = new HashMap<>();
+        }
         return header;
     }
 
@@ -119,7 +126,6 @@ public class ruleBean {
                 String[] var = vul.split("=");
                 String tmp = payload.get("payload");
                 if (tmp.contains("{{dnslog}}")) {
-                    System.out.println(tmp + " " + getOob());
                     tmp = tmp.replace("{{dnslog}}", this.getOob());//带外地址
                 }
 

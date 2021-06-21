@@ -14,6 +14,9 @@ public class scannerBean {
                 ", expression='" + expression + '\'' +
                 ", response=" + response +
                 ", result=" + result +
+                ", method='" + method + '\'' +
+                ", header=" + header +
+                ", type='" + type + '\'' +
                 '}';
     }
 
@@ -25,8 +28,17 @@ public class scannerBean {
     private Boolean result;
     private String method;
     private Map<String, String> header;
+    private boolean headerscan;
     private String type;
 
+    public boolean isHeaderscan() {
+        return headerscan;
+    }
+
+    public void setHeaderscan(boolean headerscan) {
+        this.headerscan = headerscan;
+    }
+    
     public String getType() {
         return type;
     }

@@ -19,20 +19,20 @@ import java.util.Map;
 public class scanner {
 
     public static void main(String[] args) {
-        String url = "http://120.26.84.240:8002"; // args[0];
-        String path = "/Users/song/Documents/GitHub/ScanStation/src/main/resources"; //args[1];
+        String url = args[0];
+        String path = args[1];
         String cookie;
         String param;
 
         if (args.length >= 3) {
             cookie = args[2];
         } else {
-            cookie = "YII_CSRF_TOKEN=1a9ad14783553c736189e974bd77d97972d6e165s%3A40%3A%2235fc45fbc71b2d9a8c0a75161978a5ab9b1ff529%22%3B; SKYLARffbcfe6de431e70b389078f896=4uk1fg961t4eu04qd442dnfn27";
+            cookie = "";
         }
         if (args.length >= 4) {
             param = args[3];
         } else {
-            param = "YII_CSRF_TOKEN=35fc45fbc71b2d9a8c0a75161978a5ab9b1ff529";
+            param = "";
         }
         scanner scanner = new scanner();
         ArrayList<String> re = new ArrayList<>();
@@ -40,28 +40,29 @@ public class scanner {
         String[] children = dir.list();
         for (String file : children) {
             if (file.endsWith(".yaml")) {
-                scanner.scan(url, path + "/" + file, cookie, param,re);
+                scanner.scan(url, path + "/" + file, cookie, param, re);
             }
         }
-        for (String r : re){
+        for (String r : re) {
             System.out.println(r);
         }
 
     }
 
 
-    public void scan(String url, String filePath, String cookie, String param,ArrayList<String> re) {
+    public void scan(String url, String filePath, String cookie, String param, ArrayList<String> re) {
         log.info("------检测开始");
         //初始化request
         CommonOkHttpClient httpClientNotSafe = new CommonOkHttpClientBuilder().unSafe(true).build();
         if (cookie != null && !"".equals(cookie)) {
             //设置全局cookie
-            log.info("设置全局cookie值为:"+cookie);
+            httpClientNotSafe.setCookie(cookie);
+            log.info("设置全局cookie值为:" + cookie);
         }
         if (param != null && !"".equals(param)) {
             //通过String方式设置全局参数
             httpClientNotSafe.setGlobalParam(param);
-            log.info("设置全局参数值为:"+param);
+            log.info("设置全局参数值为:" + param);
         }
         log.info("---初始化request完成");
         //加载规则
@@ -70,11 +71,11 @@ public class scanner {
         rule.setUrl(url);
 //        rule.setOob("q3fljw.dnslog.cn"); //设置dnslog
 
-        log.info("加载规则:"+vul.getName());
-        log.info("检测规则:"+rule.toString());
+        log.info("加载规则:" + vul.getName());
+        log.info("检测规则:" + rule.toString());
         log.info("---规则加载完成");
 
-        if (rule.getHeader()!=null && !rule.isHeaderscan()){
+        if (rule.isHeaderscan()) {
             httpClientNotSafe.setHeaderExt(rule.getHeader());
         }
 
@@ -85,13 +86,14 @@ public class scanner {
 
         Map<String, Object> expressionsEnv = new HashMap<>();
         for (scannerBean scb : payloadAndExpression) {
-            Map response = httpClientNotSafe.request(scb.getUrl(), scb.getParam(), scb.getMethod());
+            log.info(scb.getName() + "检测开始");
+            Map response = httpClientNotSafe.request(scb);
             scb.setResult(judgment(vul, rule, scb, response));
             expressionsEnv.put(scb.getName(), scb.getResult());
 
-            log.info(scb.getName()+"检测完成");
-            log.info("payload信息"+scb.toString()+rule.getMethod());
-            log.info("响应头:"+response.get("status")+" 响应时间:"+response.get("time"));
+            log.info(scb.getName() + "检测完成");
+            log.info("payload信息" + scb.toString() + rule.getMethod());
+            log.info("响应头:" + response.get("status") + " 响应时间:" + response.get("time"));
 
         }
         log.info("---payload检测完成");
@@ -103,8 +105,8 @@ public class scanner {
         if (expressionsRe) {
             for (scannerBean scb : payloadAndExpression) {
                 if (scb.getResult()) {
-                    re.add("++++++++++++vulFind:"+vul.getName()+"-"+scb.toString()+" "+vul.getDetail());
-                    log.info("++++++++++++vulFind:"+vul.getName()+"-"+scb.toString()+" "+vul.getDetail());
+                    re.add("++++++++++++vulFind:" + vul.getName() + "-" + scb.toString() + " " + vul.getDetail());
+                    log.info("++++++++++++vulFind:" + vul.getName() + "-" + scb.toString() + " " + vul.getDetail());
                 }
             }
         }
@@ -113,19 +115,19 @@ public class scanner {
     }
 
     private Boolean judgment(vulBean vul, ruleBean rule, scannerBean scb, Map response) {
-        if ("timeout...".equals(response.get("status"))){
-            log.error("检测超时"+scb.toString());
+        if ("timeout...".equals(response.get("status"))) {
+            log.error("检测超时");
             return false;
-        }else if ("network error".equals(response.get("status")) || "502".equals(response.get("status"))){
-            log.error("检测目标网络错误"+scb.toString());
+        } else if ("network error".equals(response.get("status")) || "502".equals(response.get("status"))) {
+            log.error("检测目标网络错误");
             return false;
         }
         avitorTools avitor = new avitorTools();
         response.put("param", rule.getParams());
         response.put("method", rule.getMethod());
         response.put("url", scb.getUrl());
-        response.put("dnslog",rule.getOob());
-        response.put("flag",rule.getOobflag());
+        response.put("dnslog", rule.getOob());
+        response.put("flag", rule.getOobflag());
 
         avitor.setEnv(response);
 

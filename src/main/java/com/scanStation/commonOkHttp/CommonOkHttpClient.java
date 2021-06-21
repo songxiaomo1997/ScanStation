@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.scanStation.bean.scannerBean;
 import com.scanStation.commonOkHttp.utils.HttpsUtils;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.*;
@@ -42,7 +43,7 @@ public final class CommonOkHttpClient {
 
     private OkHttpClient okHttpClient;
     private RequestTimeEventListener requestTimeEventListener = new RequestTimeEventListener();//时间参数获取
-    private Map<String,String> globalParam; //全局参数
+    private Map<String, String> globalParam; //全局参数
     private Map<String, String> headerExt = new HashMap<>(); //全局请求头
 
     public Map<String, String> getGlobalParam() {
@@ -56,10 +57,10 @@ public final class CommonOkHttpClient {
 
     //String转换放入
     public void setGlobalParam(String globalParam) {
-        Map<String,String> params = new HashMap<>();
-        for (String p : globalParam.split("&")){
-            String[] var=p.split("=");
-            params.put(var[0],var[1]);
+        Map<String, String> params = new HashMap<>();
+        for (String p : globalParam.split("&")) {
+            String[] var = p.split("=");
+            params.put(var[0], var[1]);
         }
         this.globalParam = params;
     }
@@ -70,18 +71,18 @@ public final class CommonOkHttpClient {
 
     //设置请求头
     public void setHeaderExt(Map<String, String> headerExt) {
-        if (this.headerExt!=null){
-            headerExt.forEach((k,v)->this.headerExt.put(k,v));
-        }else {
-            this.headerExt=new HashMap<>();
-            headerExt.forEach((k,v)->this.headerExt.put(k,v));
+        if (this.headerExt == null) {
+            this.headerExt = new HashMap<>();
+            headerExt.forEach((k, v) -> this.headerExt.put(k, v));
+        } else {
+            headerExt.forEach((k, v) -> this.headerExt.put(k, v));
         }
     }
 
     //设置cookie
-    public void setCookie(String cookie){
-        Map<String,String> header = new HashMap<>();
-        header.put("cookie",cookie);
+    public void setCookie(String cookie) {
+        Map<String, String> header = new HashMap<>();
+        header.put("cookie", cookie);
         setHeaderExt(header);
     }
 
@@ -104,17 +105,39 @@ public final class CommonOkHttpClient {
 
     }
 
-    public Map request(String url,Map<String,String> param,String method){
-        Map response = new HashMap();
+    public Map<String, String> request(String url, Map<String, String> param, String method) {
+        Map<String, String> response = new HashMap<String, String>();
         if ("POST".equals(method)) {
             response = post(url, param, null);
-        }else if("GET".equals(method)){
-            Map<String,String> header = new HashMap<>();
-            header.put("111111","222222");
-            response = (Map) get(url, param, header,null);
-        }else {
-            response.put("error","not support "+method);
+        } else if ("GET".equals(method)) {
+            Map<String, String> header = new HashMap<>();
+            response = get(url, param, null);
+        } else {
+            response.put("error", "not support " + method);
         }
+        return response;
+    }
+
+    public Map<String, String> request(scannerBean scb) {
+        Map<String, String> response = new HashMap<String, String>();
+
+
+            if ("POST".equals(scb.getMethod())) {
+                response = post(scb.getUrl(), scb.getParam(),scb.getHeader(), null);
+            } else if ("GET".equals(scb.getMethod())) {
+                response = (Map<String, String>) get(scb.getUrl(), scb.getParam(),scb.getHeader(), null);
+            } else {
+                response.put("error", "not support " + scb.getMethod());
+            }
+
+//            if ("POST".equals(scb.getMethod())) {
+//                response = post(scb.getUrl(), scb.getParam(), null);
+//            } else if ("GET".equals(scb.getMethod())) {
+//                response = get(scb.getUrl(), scb.getParam(), null);
+//            } else {
+//                response.put("error", "not support " + scb.getMethod());
+//            }
+
         return response;
     }
 
@@ -125,8 +148,8 @@ public final class CommonOkHttpClient {
      * @Title: get
      * @Description: 发送 get 请求, 有 callback为异步,callback传null为同步;异步时返回null
      */
-    public Map get(String url,Map<String,String> param, IAsyncCallback4Response callback) {
-        return (Map) get(url,param,this.headerExt,callback);
+    public Map get(String url, Map<String, String> param, IAsyncCallback4Response callback) {
+        return (Map) get(url, param, this.headerExt, callback);
     }
 
     /**
@@ -134,23 +157,31 @@ public final class CommonOkHttpClient {
      * @param callback
      * @return
      * @Title: get
-     * @Description: 发送 get 请求并返回okhttp3.Response, 有 callback为异步,callback传null为同步;异步时返回null
+     * @Description: 发送 get 请求并返回Response, 有 callback为异步,callback传null为同步;异步时返回null
      */
-    public Object get(String url,Map<String,String> param,Map<String, String> headerExt, IAsyncCallback4Response callback) {
-        HttpUrl.Builder urlBuilder =HttpUrl.parse(url).newBuilder();
-        if (param!=null){
-            param.forEach((k,v)->urlBuilder.addQueryParameter(k,v));
+    public Object get(String url, Map<String, String> param, Map<String, String> headerExt, IAsyncCallback4Response callback) {
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+        if (param != null) {
+            param.forEach((k, v) -> urlBuilder.addQueryParameter(k, v));
         }
-        if (this.globalParam!=null){
-            this.globalParam.forEach((k,v) -> urlBuilder.addQueryParameter(k,v));
+        if (this.globalParam != null) {
+            this.globalParam.forEach((k, v) -> urlBuilder.addQueryParameter(k, v));
         }
         okhttp3.Request.Builder reqBuilder = new Request.Builder().get().url(urlBuilder.build());
+        if (this.headerExt != null && this.headerExt.size() > 0) {
+            this.headerExt.forEach((key, value) -> {
+                reqBuilder.addHeader(key, value);
+            });
+        }
         if (headerExt != null && headerExt.size() > 0) {
-            headerExt.forEach((key, value) -> { reqBuilder.addHeader(key, value); });
-            this.headerExt.forEach((key, value) -> { reqBuilder.addHeader(key, value); });
+            headerExt.forEach((key, value) -> {
+                reqBuilder.removeHeader(key);
+                reqBuilder.addHeader(key, value);
+            });
         }
         Request request = reqBuilder.build();
-        return  sendRequest(request, true, null, callback);
+        log.debug("请求"+request.toString());
+        return sendRequest(request, true, null, callback);
     }
 
     /**
@@ -184,7 +215,7 @@ public final class CommonOkHttpClient {
      * @Title: post
      * @Description: 使用xml方式发送post请求, 有 callback为异步,callback传null为同步;异步时返回null
      */
-    public String post(String url, IAsyncCallback callback, String xmlStr) {
+    public String postxml(String url, IAsyncCallback callback, String xmlStr) {
         return (String) doPost(url, null, xmlStr, "application/xml", callback, null, false, this.headerExt);
     }
 
@@ -200,6 +231,10 @@ public final class CommonOkHttpClient {
         return (Response) doPost(url, null, jsonStr, null, callback, true, headerExt);
     }
 
+    public Map<String, String> post(String url, Map<String, String> prarm, Map<String, String> header, IAsyncCallback callback) {
+        return (Map<String, String>) doPost(url, prarm, null, callback, null, true, header);
+    }
+
     /**
      * @param url
      * @param prarm
@@ -208,8 +243,8 @@ public final class CommonOkHttpClient {
      * @Title: post
      * @Description: 使用传统参数方式发送post请求, 有 callback为异步,callback传null为同步;异步时返回null
      */
-    public Map post(String url, Map<String, String> prarm, IAsyncCallback callback) {
-        return (Map) doPost(url, prarm, null, callback, null, true, this.headerExt);
+    public Map<String, String> post(String url, Map<String, String> prarm, IAsyncCallback callback) {
+        return (Map<String, String>) doPost(url, prarm, null, callback, null, true, this.headerExt);
     }
 
     /**
@@ -285,15 +320,22 @@ public final class CommonOkHttpClient {
         } else if (!CollectionUtils.isEmpty(prarm)) {
             Builder builder = new FormBody.Builder();
             prarm.forEach((k, v) -> builder.add(k, v));
-            if (this.globalParam!=null){
-                this.globalParam.forEach((k,v) -> builder.add(k,v));
+            if (this.globalParam != null) {
+                this.globalParam.forEach((k, v) -> builder.add(k, v));
             }
             body = builder.build();
         }
         okhttp3.Request.Builder reqBuilder = new Request.Builder().post(body).url(url);
+        if (this.headerExt != null && this.headerExt.size() > 0) {
+            this.headerExt.forEach((key, value) -> {
+                reqBuilder.addHeader(key, value);
+            });
+        }
         if (headerExt != null && headerExt.size() > 0) {
-            headerExt.forEach((key, value) -> { reqBuilder.addHeader(key, value); });
-            this.headerExt.forEach((key, value) -> { reqBuilder.addHeader(key, value); });
+            headerExt.forEach((key, value) -> {
+                reqBuilder.removeHeader(key);
+                reqBuilder.addHeader(key, value);
+            });
         }
         Request request = reqBuilder.build();
         return sendRequest(request, isNeedResponse, callback, callback4Response);
@@ -315,40 +357,39 @@ public final class CommonOkHttpClient {
 
                 Response response = okHttpClient.newCall(request).execute();
 
-//                log点
 //                System.out.println(request.toString());
 //                System.out.println(response.toString());
 
-                Map<String,String> responseMap = new HashMap<>();
+                Map<String, String> responseMap = new HashMap<>();
                 responseMap.put("status", String.valueOf(response.code()));
-                responseMap.put("header",response.headers().toString());
-                responseMap.put("body",response.body().string());
+                responseMap.put("header", response.headers().toString());
+                responseMap.put("body", response.body().string());
                 responseMap.put("time", String.valueOf(requestTimeEventListener.getRequestTime()));
                 return responseMap;
 
             } catch (SocketTimeoutException e) {
                 //log点
-                Map<String,String> responseMap = new HashMap<>();
+                Map<String, String> responseMap = new HashMap<>();
                 responseMap.put("status", "timeout...");
-                responseMap.put("header","timeout...");
-                responseMap.put("body","timeout...");
-                responseMap.put("time", String.valueOf(System.currentTimeMillis()-requestTimeEventListener.getStarttime()));
+                responseMap.put("header", "timeout...");
+                responseMap.put("body", "timeout...");
+                responseMap.put("time", String.valueOf(System.currentTimeMillis() - requestTimeEventListener.getStarttime()));
                 return responseMap;
             } catch (SocketException e) {
-                log.error("检测目标网络错误:"+request.url());
-                Map<String,String> responseMap = new HashMap<>();
+                log.error("检测目标网络错误:" + request.url());
+                Map<String, String> responseMap = new HashMap<>();
                 responseMap.put("status", "network error");
-                responseMap.put("header","network error");
-                responseMap.put("body","network error");
+                responseMap.put("header", "network error");
+                responseMap.put("body", "network error");
                 responseMap.put("time", "0");
                 return responseMap;
             } catch (IOException e) {
                 e.printStackTrace();
-                log.error("检测目标网络错误:"+request.url());
-                Map<String,String> responseMap = new HashMap<>();
+                log.error("检测目标网络错误:" + request.url());
+                Map<String, String> responseMap = new HashMap<>();
                 responseMap.put("status", "network error");
-                responseMap.put("header","network error");
-                responseMap.put("body","network error");
+                responseMap.put("header", "network error");
+                responseMap.put("body", "network error");
                 responseMap.put("time", "0");
                 return responseMap;
             }
