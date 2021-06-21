@@ -19,10 +19,37 @@ public class scannerBean {
 
     private String url;
     private String name;
-    private Map<String,String> param;
+    private Map<String, String> param;
     private String expression;
-    private Map<String,String> response;
+    private Map<String, String> response;
     private Boolean result;
+    private String method;
+    private Map<String, String> header;
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Map<String, String> getHeader() {
+        return header;
+    }
+
+    public void setHeader(Map<String, String> header) {
+        this.header = header;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
 
     public Boolean getResult() {
         return result;

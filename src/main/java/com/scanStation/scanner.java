@@ -5,6 +5,7 @@ import com.scanStation.bean.scannerBean;
 import com.scanStation.bean.vulBean;
 import com.scanStation.commonOkHttp.CommonOkHttpClient;
 import com.scanStation.commonOkHttp.CommonOkHttpClientBuilder;
+import com.scanStation.tools.Generatepayload.payload;
 import com.scanStation.tools.avitorTools;
 import com.scanStation.tools.yamlTools;
 import lombok.extern.log4j.Log4j2;
@@ -74,11 +75,11 @@ public class scanner {
         log.info("加载规则:"+vul.getName());
         log.info("---规则加载完成");
 
-        ArrayList<scannerBean> payloadAndExpression = rule.Generatepayload();
+        payload paylaod = new payload(rule);
+        ArrayList<scannerBean> payloadAndExpression = paylaod.Generatepayload();
         Map<String, Object> expressionsEnv = new HashMap<>();
         for (scannerBean scb : payloadAndExpression) {
-            Map response = httpClientNotSafe.request(scb.getUrl(), scb.getParam(), rule.getMethod());
-            System.out.println(scb.toString());
+            Map response = httpClientNotSafe.request(scb.getUrl(), scb.getParam(), scb.getMethod());
             scb.setResult(judgment(vul, rule, scb, response));
             expressionsEnv.put(scb.getName(), scb.getResult());
         //System.out.println(scb.toString());

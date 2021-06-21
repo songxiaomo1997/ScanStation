@@ -33,6 +33,38 @@ public class ruleBean {
     private String oob;
     private String oobflag;
 
+    private Map<String, String> header;
+    private boolean headerscan;
+    private String type;
+
+    public void setOobflag(String oobflag) {
+        this.oobflag = oobflag;
+    }
+
+    public Map<String, String> getHeader() {
+        return header;
+    }
+
+    public void setHeader(Map<String, String> header) {
+        this.header = header;
+    }
+
+    public boolean isHeaderscan() {
+        return headerscan;
+    }
+
+    public void setHeaderscan(boolean headerscan) {
+        this.headerscan = headerscan;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getOobflag() {
         return oobflag;
     }
@@ -44,12 +76,12 @@ public class ruleBean {
     }
 
     public String getOob() {
-        return oobflag+"."+oob;
+        return oobflag + "." + oob;
     }
 
     public void setOob(String oob) {
         setOobflag();
-        this.oob=oob;
+        this.oob = oob;
     }
 
     public String getExpressions() {
@@ -60,43 +92,45 @@ public class ruleBean {
         this.expressions = expressions;
     }
 
-    public Map<String, String> getParams(){
-        Map<String,String> params = new HashMap<>();
-        for (String param : originalParam.split("&")){
-            String[] var=param.split("=");
-            params.put(var[0],var.length>=2?var[1]:"");
+    public Map<String, String> getParams() {
+        Map<String, String> params = new HashMap<>();
+        for (String param : originalParam.split("&")) {
+            String[] var = param.split("=");
+            params.put(var[0], var.length >= 2 ? var[1] : "");
         }
         return params;
     }
 
-    //
-    /**返回一个二维数组[0][0]是第一组payload
+    /**
+     * 返回一个二维数组[0][0]是第一组payload
      * 数组第一排第一个[0][0]是组装好的payload,第二排第一个是对应的表达式[1][0]
      * [payload1,payload2]
      * [expression1,expression2]
      *
-     * @return**/
-    public ArrayList<scannerBean> Generatepayload(){
+     * @return
+     **/
+    public ArrayList<scannerBean> Generatepayload() {
 
         ArrayList<scannerBean> scanner = new ArrayList<>();
-        int i =1;
-        for (String vul : vulParam.split("&")){
-            for (Map<String,String> payload:payloads){
-                Map<String,String> params = getParams();
-                String[] var=vul.split("=");
-                String tmp=payload.get("payload");
-                if (tmp.contains("{{dnslog}}")){
-                    System.out.println(tmp+" "+getOob());
-                    tmp=tmp.replace("{{dnslog}}",this.getOob());//带外地址
-                    }
+        int i = 1;
+        for (String vul : vulParam.split("&")) {
+            for (Map<String, String> payload : payloads) {
+                Map<String, String> params = getParams();
+                String[] var = vul.split("=");
+                String tmp = payload.get("payload");
+                if (tmp.contains("{{dnslog}}")) {
+                    System.out.println(tmp + " " + getOob());
+                    tmp = tmp.replace("{{dnslog}}", this.getOob());//带外地址
+                }
 
-                params.put(var[0],var.length>=2?var[1]+tmp:tmp); //暂时直接加入
+                params.put(var[0], var.length >= 2 ? var[1] + tmp : tmp); //暂时直接加入
 
                 scannerBean scb = new scannerBean();
                 scb.setUrl(getUrl());
-                scb.setName("payload"+i);
+                scb.setName("payload" + i);
                 scb.setParam(params);
                 scb.setExpression((String) payload.get("expression"));
+                scb.setMethod(method);
                 scanner.add(scb);
                 i++;
             }
@@ -167,7 +201,7 @@ public class ruleBean {
     }
 
     public void setUrl(String url) {
-        this.url = url+getPath();
+        this.url = url + getPath();
     }
 
 }
