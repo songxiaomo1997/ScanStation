@@ -7,7 +7,7 @@ public class scannerBean {
 
     @Override
     public String toString() {
-        return "scannerBean{" +
+        return "scanner:{" +
                 "url='" + url + '\'' +
                 ", name='" + name + '\'' +
                 ", param=" + param +

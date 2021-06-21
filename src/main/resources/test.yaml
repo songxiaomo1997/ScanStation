@@ -4,9 +4,9 @@ rules:
   path: /vul/sql/less-1 #漏洞路径 /api/geturl/127.0.0.1*
   originalParam: url #原始参数如: id=1&name=songxiaomo
   vulParam: id=1 #需要扫描的漏洞参数如:id=1&name=songxiaomo /api/geturl/*/*
-#  header:
-#    Accept-Encoding: 123
-#  headerscan : true | false
+  header:
+    Accept-Encoding: 123
+  headerscan : false #true | false
   payloads:
     - payload: "and sleep(1)"
       expression: sleep() #sleep()判断是否存在时间延迟|string.contains(body,'Program Files')判断请求体是否存在关键字

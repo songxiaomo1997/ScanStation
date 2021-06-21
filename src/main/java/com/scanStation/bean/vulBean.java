@@ -34,7 +34,7 @@ public class vulBean {
 
     @Override
     public String toString() {
-        return "{" +
+        return "vul:{" +
                 "name='" + name + '\'' +
                 ", rules=" + rules +
                 ", detail=" + detail +

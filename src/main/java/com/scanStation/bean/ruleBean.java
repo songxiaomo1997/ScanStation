@@ -8,7 +8,7 @@ public class ruleBean {
 
     @Override
     public String toString() {
-        return "ruleBean{" +
+        return "rule:{" +
                 "url='" + url + '\'' +
                 ", method='" + method + '\'' +
                 ", path='" + path + '\'' +

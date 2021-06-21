@@ -19,20 +19,20 @@ import java.util.Map;
 public class scanner {
 
     public static void main(String[] args) {
-        String url = args[0];
-        String path = args[1];
+        String url = "http://120.26.84.240:8002"; // args[0];
+        String path = "/Users/song/Documents/GitHub/ScanStation/src/main/resources"; //args[1];
         String cookie;
         String param;
 
         if (args.length >= 3) {
             cookie = args[2];
         } else {
-            cookie = "";
+            cookie = "YII_CSRF_TOKEN=1a9ad14783553c736189e974bd77d97972d6e165s%3A40%3A%2235fc45fbc71b2d9a8c0a75161978a5ab9b1ff529%22%3B; SKYLARffbcfe6de431e70b389078f896=4uk1fg961t4eu04qd442dnfn27";
         }
         if (args.length >= 4) {
             param = args[3];
         } else {
-            param = "";
+            param = "YII_CSRF_TOKEN=35fc45fbc71b2d9a8c0a75161978a5ab9b1ff529";
         }
         scanner scanner = new scanner();
         ArrayList<String> re = new ArrayList<>();
@@ -56,7 +56,6 @@ public class scanner {
         CommonOkHttpClient httpClientNotSafe = new CommonOkHttpClientBuilder().unSafe(true).build();
         if (cookie != null && !"".equals(cookie)) {
             //设置全局cookie
-            httpClientNotSafe.setCookie(cookie);
             log.info("设置全局cookie值为:"+cookie);
         }
         if (param != null && !"".equals(param)) {
@@ -70,21 +69,29 @@ public class scanner {
         ruleBean rule = vul.getRules();
         rule.setUrl(url);
 //        rule.setOob("q3fljw.dnslog.cn"); //设置dnslog
-        log.info(rule.toString());
 
         log.info("加载规则:"+vul.getName());
+        log.info("检测规则:"+rule.toString());
         log.info("---规则加载完成");
 
+        if (rule.getHeader()!=null && !rule.isHeaderscan()){
+            httpClientNotSafe.setHeaderExt(rule.getHeader());
+        }
+
+        log.info("payload开始生成");
         payload paylaod = new payload(rule);
         ArrayList<scannerBean> payloadAndExpression = paylaod.Generatepayload();
+        log.info("payload生成完成开始扫描");
+
         Map<String, Object> expressionsEnv = new HashMap<>();
         for (scannerBean scb : payloadAndExpression) {
             Map response = httpClientNotSafe.request(scb.getUrl(), scb.getParam(), scb.getMethod());
             scb.setResult(judgment(vul, rule, scb, response));
             expressionsEnv.put(scb.getName(), scb.getResult());
-        //System.out.println(scb.toString());
-            log.info("单一payload检测完成");
-            log.info("payload信息:"+scb.toString()+rule.getMethod());
+
+            log.info(scb.getName()+"检测完成");
+            log.info("payload信息"+scb.toString()+rule.getMethod());
+            log.info("响应头:"+response.get("status")+" 响应时间:"+response.get("time"));
 
         }
         log.info("---payload检测完成");
@@ -106,6 +113,13 @@ public class scanner {
     }
 
     private Boolean judgment(vulBean vul, ruleBean rule, scannerBean scb, Map response) {
+        if ("timeout...".equals(response.get("status"))){
+            log.error("检测超时"+scb.toString());
+            return false;
+        }else if ("network error".equals(response.get("status")) || "502".equals(response.get("status"))){
+            log.error("检测目标网络错误"+scb.toString());
+            return false;
+        }
         avitorTools avitor = new avitorTools();
         response.put("param", rule.getParams());
         response.put("method", rule.getMethod());

@@ -2,6 +2,7 @@ package com.scanStation.tools.Generatepayload;
 
 import com.scanStation.bean.ruleBean;
 import com.scanStation.bean.scannerBean;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -22,17 +23,15 @@ public class payload {
     }
 
     private ArrayList<scannerBean> getformPayloads(ArrayList<scannerBean> scanner) {
-        int i = scanner.size();
+        int i = scanner.size()+1;
         for (String vul : rule.getVulParam().split("&")) {
             for (Map<String, String> payload : rule.getPayloads()) {
                 Map<String, String> params = rule.getParams();
                 String[] var = vul.split("=");
                 String tmp = payload.get("payload");
-                if (tmp.contains("{{dnslog}}")) {
-                    System.out.println(tmp + " " + rule.getOob());
-                    tmp = tmp.replace("{{dnslog}}", rule.getOob());//带外地址
-                }
-
+                //存在带外等替换
+                tmp = replaceSpecialParam(tmp,"{{dnslog}}",rule.getOob());
+                //组装payload放入
                 params.put(var[0], var.length >= 2 ? var[1] + tmp : tmp); //暂时直接加入
 
                 scannerBean scb = new scannerBean();
@@ -47,6 +46,14 @@ public class payload {
         }
 
         return scanner;
+    }
+
+    @NotNull
+    private String replaceSpecialParam(String tmp,String Special,String Param) {
+        if (tmp.contains("Special")) {
+            tmp = tmp.replace(Special,Param);//带外地址
+        }
+        return tmp;
     }
 
 

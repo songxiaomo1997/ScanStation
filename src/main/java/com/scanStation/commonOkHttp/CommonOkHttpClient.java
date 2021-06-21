@@ -43,7 +43,7 @@ public final class CommonOkHttpClient {
     private OkHttpClient okHttpClient;
     private RequestTimeEventListener requestTimeEventListener = new RequestTimeEventListener();//时间参数获取
     private Map<String,String> globalParam; //全局参数
-    private Map<String, String> headerExt; //全局请求头
+    private Map<String, String> headerExt = new HashMap<>(); //全局请求头
 
     public Map<String, String> getGlobalParam() {
         return globalParam;
@@ -70,7 +70,12 @@ public final class CommonOkHttpClient {
 
     //设置请求头
     public void setHeaderExt(Map<String, String> headerExt) {
-        this.headerExt = headerExt;
+        if (this.headerExt!=null){
+            headerExt.forEach((k,v)->this.headerExt.put(k,v));
+        }else {
+            this.headerExt=new HashMap<>();
+            headerExt.forEach((k,v)->this.headerExt.put(k,v));
+        }
     }
 
     //设置cookie
@@ -104,7 +109,9 @@ public final class CommonOkHttpClient {
         if ("POST".equals(method)) {
             response = post(url, param, null);
         }else if("GET".equals(method)){
-            response = get(url, param, null);
+            Map<String,String> header = new HashMap<>();
+            header.put("111111","222222");
+            response = (Map) get(url, param, header,null);
         }else {
             response.put("error","not support "+method);
         }
@@ -139,9 +146,8 @@ public final class CommonOkHttpClient {
         }
         okhttp3.Request.Builder reqBuilder = new Request.Builder().get().url(urlBuilder.build());
         if (headerExt != null && headerExt.size() > 0) {
-            headerExt.forEach((key, value) -> {
-                reqBuilder.addHeader(key, value);
-            });
+            headerExt.forEach((key, value) -> { reqBuilder.addHeader(key, value); });
+            this.headerExt.forEach((key, value) -> { reqBuilder.addHeader(key, value); });
         }
         Request request = reqBuilder.build();
         return  sendRequest(request, true, null, callback);
@@ -286,9 +292,8 @@ public final class CommonOkHttpClient {
         }
         okhttp3.Request.Builder reqBuilder = new Request.Builder().post(body).url(url);
         if (headerExt != null && headerExt.size() > 0) {
-            headerExt.forEach((key, value) -> {
-                reqBuilder.addHeader(key, value);
-            });
+            headerExt.forEach((key, value) -> { reqBuilder.addHeader(key, value); });
+            this.headerExt.forEach((key, value) -> { reqBuilder.addHeader(key, value); });
         }
         Request request = reqBuilder.build();
         return sendRequest(request, isNeedResponse, callback, callback4Response);
