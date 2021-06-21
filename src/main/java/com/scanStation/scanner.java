@@ -51,7 +51,7 @@ public class scanner {
 
 
     public void scan(String url, String filePath, String cookie, String param, ArrayList<String> re) {
-        log.info("------检测开始");
+        log.info("------------------------------------检测开始------------------------------------");
         //初始化request
         CommonOkHttpClient httpClientNotSafe = new CommonOkHttpClientBuilder().unSafe(true).build();
         if (cookie != null && !"".equals(cookie)) {
@@ -92,7 +92,7 @@ public class scanner {
             expressionsEnv.put(scb.getName(), scb.getResult());
 
             log.info(scb.getName() + "检测完成");
-            log.info("payload信息" + scb.toString() + rule.getMethod());
+            log.debug("payload信息" + scb.toString() + rule.getMethod());
             log.info("响应头:" + response.get("status") + " 响应时间:" + response.get("time"));
 
         }
@@ -111,7 +111,7 @@ public class scanner {
             }
         }
         log.info("---expressions判断完成");
-        log.info("------检测完成");
+        log.info("------------------------------------检测完成------------------------------------");
     }
 
     private Boolean judgment(vulBean vul, ruleBean rule, scannerBean scb, Map response) {
