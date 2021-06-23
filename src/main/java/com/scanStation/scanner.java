@@ -19,20 +19,20 @@ import java.util.Map;
 public class scanner {
 
     public static void main(String[] args) {
-        String url = "http://120.26.84.240:9999";//args[0];
-        String path =  "/Users/song/Documents/GitHub/ScanStation/src/main/resources/";//args[1];
+        String url = args[0];
+        String path =  args[1];
         String cookie;
         String param;
 
         if (args.length >= 3) {
             cookie = args[2];
         } else {
-            cookie = "Cookie: YII_CSRF_TOKEN=42f9c12f81b31bbc171cc2471508c20ef562cb8cs%3A40%3A%2294ecc0d2642b02bd09e7c1197b8df0f49e2148f5%22%3B; SKYLAR73eef716d7005a6e214093169b=98h05rtgev50p497mrgm6rq665";
+            cookie = "";
         }
         if (args.length >= 4) {
             param = args[3];
         } else {
-            param = "YII_CSRF_TOKEN=94ecc0d2642b02bd09e7c1197b8df0f49e2148f5";
+            param = "";
         }
         scanner scanner = new scanner();
         ArrayList<String> re = new ArrayList<>();
