@@ -99,8 +99,8 @@ public class ruleBean {
         this.expressions = expressions;
     }
 
-    public Map<String, String> getParams() {
-        Map<String, String> params = new HashMap<>();
+    public Map<String, Object> getParams() {
+        Map<String, Object> params = new HashMap<>();
         for (String param : originalParam.split("&")) {
             String[] var = param.split("=");
             params.put(var[0], var.length >= 2 ? var[1] : "");
@@ -122,7 +122,7 @@ public class ruleBean {
         int i = 1;
         for (String vul : vulParam.split("&")) {
             for (Map<String, String> payload : payloads) {
-                Map<String, String> params = getParams();
+                Map<String, Object> params = getParams();
                 String[] var = vul.split("=");
                 String tmp = payload.get("payload");
                 if (tmp.contains("{{dnslog}}")) {

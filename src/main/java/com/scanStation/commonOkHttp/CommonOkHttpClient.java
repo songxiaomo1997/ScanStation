@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.scanStation.bean.scannerBean;
 import com.scanStation.commonOkHttp.utils.HttpsUtils;
 import lombok.extern.log4j.Log4j2;
@@ -105,7 +107,7 @@ public final class CommonOkHttpClient {
 
     }
 
-    public Map<String, String> request(String url, Map<String, String> param, String method) {
+    public Map<String, String> request(String url, Map<String, Object> param, String method) {
         Map<String, String> response = new HashMap<String, String>();
         if ("POST".equals(method)) {
             response = post(url, param, null);
@@ -123,12 +125,19 @@ public final class CommonOkHttpClient {
 
 
             if ("POST".equals(scb.getMethod())) {
-                response = post(scb.getUrl(), scb.getParam(),scb.getHeader(), null);
+                if (scb.getType().equals("Json")){
+                    GsonBuilder builder = new GsonBuilder();
+                    Gson gson = builder.create();
+                    response = post(scb.getUrl(),gson.toJson(scb.getParam()),scb.getHeader(),null);
+                }else{
+                    response = post(scb.getUrl(), scb.getParam(), scb.getHeader(), null);
+                }
             } else if ("GET".equals(scb.getMethod())) {
-                response = (Map<String, String>) get(scb.getUrl(), scb.getParam(),scb.getHeader(), null);
+                response = (Map<String, String>) get(scb.getUrl(), scb.getParam(), scb.getHeader(), null);
             } else {
                 response.put("error", "not support " + scb.getMethod());
             }
+
 
 //            if ("POST".equals(scb.getMethod())) {
 //                response = post(scb.getUrl(), scb.getParam(), null);
@@ -148,7 +157,7 @@ public final class CommonOkHttpClient {
      * @Title: get
      * @Description: 发送 get 请求, 有 callback为异步,callback传null为同步;异步时返回null
      */
-    public Map get(String url, Map<String, String> param, IAsyncCallback4Response callback) {
+    public Map get(String url, Map<String, Object> param, IAsyncCallback4Response callback) {
         return (Map) get(url, param, this.headerExt, callback);
     }
 
@@ -159,10 +168,10 @@ public final class CommonOkHttpClient {
      * @Title: get
      * @Description: 发送 get 请求并返回Response, 有 callback为异步,callback传null为同步;异步时返回null
      */
-    public Object get(String url, Map<String, String> param, Map<String, String> headerExt, IAsyncCallback4Response callback) {
+    public Object get(String url, Map<String, Object> param, Map<String, String> headerExt, IAsyncCallback4Response callback) {
         HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
         if (param != null) {
-            param.forEach((k, v) -> urlBuilder.addQueryParameter(k, v));
+            param.forEach((k, v) -> urlBuilder.addQueryParameter(k, String.valueOf(v)));
         }
         if (this.globalParam != null) {
             this.globalParam.forEach((k, v) -> urlBuilder.addQueryParameter(k, v));
@@ -227,11 +236,11 @@ public final class CommonOkHttpClient {
      * @Title: post
      * @Description: 使用json方式发送post请求并返回okhttp3.Response, 有 callback为异步,callback传null为同步;异步时返回null
      */
-    public Response post(String url, String jsonStr, Map<String, String> headerExt, IAsyncCallback4Response callback) {
-        return (Response) doPost(url, null, jsonStr, null, callback, true, headerExt);
+    public Map<String, String> post(String url, String jsonStr, Map<String, String> headerExt, IAsyncCallback4Response callback) {
+        return (Map<String, String>) doPost(url, null, jsonStr, null, callback, true, headerExt);
     }
 
-    public Map<String, String> post(String url, Map<String, String> prarm, Map<String, String> header, IAsyncCallback callback) {
+    public Map<String, String> post(String url, Map<String, Object> prarm, Map<String, String> header, IAsyncCallback callback) {
         return (Map<String, String>) doPost(url, prarm, null, callback, null, true, header);
     }
 
@@ -243,7 +252,7 @@ public final class CommonOkHttpClient {
      * @Title: post
      * @Description: 使用传统参数方式发送post请求, 有 callback为异步,callback传null为同步;异步时返回null
      */
-    public Map<String, String> post(String url, Map<String, String> prarm, IAsyncCallback callback) {
+    public Map<String, String> post(String url, Map<String, Object> prarm, IAsyncCallback callback) {
         return (Map<String, String>) doPost(url, prarm, null, callback, null, true, this.headerExt);
     }
 
@@ -291,7 +300,7 @@ public final class CommonOkHttpClient {
      * @Title: doPost
      * @Description: 执行post
      */
-    private Object doPost(String url, Map<String, String> prarm, String jsonStr, IAsyncCallback callback, IAsyncCallback4Response callback4Response, boolean isNeedResponse, Map<String, String> headerExt) {
+    private Object doPost(String url, Map<String, Object> prarm, String jsonStr, IAsyncCallback callback, IAsyncCallback4Response callback4Response, boolean isNeedResponse, Map<String, String> headerExt) {
         if (StringUtils.isBlank(jsonStr)) {
             return doPost(url, prarm, jsonStr, "application/x-www-form-urlencoded", callback, callback4Response, isNeedResponse, headerExt);
         } else {
@@ -313,13 +322,13 @@ public final class CommonOkHttpClient {
      * @Title: doPost
      * @Description: 执行post
      */
-    public Object doPost(String url, Map<String, String> prarm, String postStr, String dataMediaType, IAsyncCallback callback, IAsyncCallback4Response callback4Response, boolean isNeedResponse, Map<String, String> headerExt) {
+    public Object doPost(String url, Map<String, Object> prarm, String postStr, String dataMediaType, IAsyncCallback callback, IAsyncCallback4Response callback4Response, boolean isNeedResponse, Map<String, String> headerExt) {
         RequestBody body = okhttp3.internal.Util.EMPTY_REQUEST;
         if (StringUtils.isNotBlank(postStr)) {
             body = RequestBody.create(MediaType.parse(dataMediaType + "; charset=utf-8"), postStr);
         } else if (!CollectionUtils.isEmpty(prarm)) {
             Builder builder = new FormBody.Builder();
-            prarm.forEach((k, v) -> builder.add(k, v));
+            prarm.forEach((k, v) -> builder.add(k, String.valueOf(v)));
             if (this.globalParam != null) {
                 this.globalParam.forEach((k, v) -> builder.add(k, v));
             }

@@ -22,7 +22,7 @@ public class scannerBean {
 
     private String url;
     private String name;
-    private Map<String, String> param;
+    private Map<String, Object> param;
     private String expression;
     private Map<String, String> response;
     private Boolean result;
@@ -40,6 +40,9 @@ public class scannerBean {
     }
     
     public String getType() {
+        if (type==null){
+            type="";
+        }
         return type;
     }
 
@@ -87,11 +90,11 @@ public class scannerBean {
         this.name = name;
     }
 
-    public Map<String, String> getParam() {
+    public Map<String, Object> getParam() {
         return param;
     }
 
-    public void setParam(Map<String, String> param) {
+    public void setParam(Map<String, Object> param) {
         this.param = param;
     }
 

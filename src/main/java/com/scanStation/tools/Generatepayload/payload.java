@@ -21,6 +21,8 @@ public class payload {
         ArrayList<scannerBean> scanner = new ArrayList<>();
         if ("form".equals(rule.getType())) {
             getformPayloads(scanner);
+        }if ("Json".equals(rule.getType())){
+            getjsonPayload(scanner);
         }
         getheaderPayload(scanner);
         return scanner;
@@ -31,7 +33,7 @@ public class payload {
         int i = scanner.size();
         for (String vul : rule.getVulParam().split("&")) {
             for (Map<String, String> payload : rule.getPayloads()) {
-                Map<String, String> params = rule.getParams();
+                Map<String, Object> params = rule.getParams();
                 String[] var = vul.split("=");
                 String tmp = payload.get("payload");
                 //存在带外等替换
@@ -45,6 +47,7 @@ public class payload {
                 scb.setParam(params);
                 scb.setExpression(payload.get("expression"));
                 scb.setMethod(rule.getMethod());
+                scb.setType("Form");
                 scanner.add(scb);
                 i++;
             }
@@ -53,24 +56,28 @@ public class payload {
         return scanner;
     }
 
-
     private ArrayList<scannerBean> getheaderPayload(ArrayList<scannerBean> scanner) {
         if (rule.isHeaderscan()) {
             int i = scanner.size();
             for (Map.Entry<String, String> header : rule.getHeader().entrySet()) {
                 for (Map<String, String> payload : rule.getPayloads()) {
-
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put(header.getKey(), payload.get("payload"));
-
                     scannerBean scb = new scannerBean();
-                    Map<String, String> params = rule.getParams(); //原始参数
+                    Map<String, String> headers = new HashMap<>();
+                    Map<String, Object> params = new HashMap<>();
+                    headers.put(header.getKey(), payload.get("payload"));
+                    if(rule.getType().equals("Form")) {
+                        params = rule.getParams(); //原始参数
+                    }else if (rule.getType().equals("Json")){
+                        replaceJson replaceJson = new replaceJson();
+                        params= replaceJson.replace(rule.getOriginalParam(),"","");
+                    }
                     scb.setHeader(headers);
                     scb.setUrl(rule.getUrl());
                     scb.setName("payload" + i);
                     scb.setParam(params);
                     scb.setExpression(payload.get("expression"));
                     scb.setMethod(rule.getMethod());
+                    scb.setType(rule.getType());
                     scb.setHeaderscan(true);
                     scanner.add(scb);
                     i++;
@@ -85,6 +92,23 @@ public class payload {
     }
 
     private ArrayList<scannerBean> getjsonPayload(ArrayList<scannerBean> scanner) {
+        int i = scanner.size();
+        for (String vul : rule.getVulParam().split("&")) {
+            for (Map<String, String> payload : rule.getPayloads()) {
+                replaceJson replaceJson = new replaceJson();
+                Map params = replaceJson.replace(rule.getOriginalParam(),vul,payload.get("payload"));
+
+                scannerBean scb = new scannerBean();
+                scb.setUrl(rule.getUrl());
+                scb.setName("payload" + i);
+                scb.setParam(params);
+                scb.setExpression(payload.get("expression"));
+                scb.setMethod(rule.getMethod());
+                scanner.add(scb);
+                scb.setType("Json");
+                i++;
+            }
+        }
         return scanner;
     }
 

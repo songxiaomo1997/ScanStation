@@ -26,6 +26,4 @@ public class yamlTools {
         vulBean vulBean = yaml.loadAs(inputStream, vulBean.class);
         return vulBean;
     }
-
-
 }
