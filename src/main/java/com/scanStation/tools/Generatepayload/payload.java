@@ -19,7 +19,7 @@ public class payload {
 
     public ArrayList<scannerBean> Generatepayload() {
         ArrayList<scannerBean> scanner = new ArrayList<>();
-        if ("form".equals(rule.getType())) {
+        if ("Form".equals(rule.getType())) {
             getformPayloads(scanner);
         }if ("Json".equals(rule.getType())){
             getjsonPayload(scanner);
@@ -49,6 +49,7 @@ public class payload {
                 scb.setMethod(rule.getMethod());
                 scb.setType("Form");
                 scanner.add(scb);
+                log.debug(scb.toString());
                 i++;
             }
         }

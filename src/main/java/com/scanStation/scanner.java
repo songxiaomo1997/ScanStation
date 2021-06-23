@@ -19,8 +19,8 @@ import java.util.Map;
 public class scanner {
 
     public static void main(String[] args) {
-        String url = args[0];
-        String path = args[1];
+        String url = "http://120.26.84.240:9999";//args[0];
+        String path = "/Users/song/Desktop/sky_rules/OK";// args[1];
         String cookie;
         String param;
 
@@ -100,8 +100,18 @@ public class scanner {
         //expressions判断
         avitorTools avitor = new avitorTools();
         avitor.setEnv(expressionsEnv);
+//        log.debug(expressionsEnv);
+//        log.debug(rule.getExpressions());
         avitor.setExpression(rule.getExpressions());
-        Boolean expressionsRe = avitor.execAvitor();
+        Boolean expressionsRe = false;
+        try {
+            expressionsRe = avitor.execAvitor();
+        }catch (Exception e){
+            log.error("表达式错误");
+            log.debug(expressionsEnv);
+            log.debug(rule.getExpressions());
+            expressionsRe = false;
+        }
         if (expressionsRe) {
             for (scannerBean scb : payloadAndExpression) {
                 if (scb.getResult()) {
@@ -133,6 +143,7 @@ public class scanner {
 
         avitor.setExpression(scb.getExpression());
         Boolean re = avitor.execAvitor();
+        System.out.println(re);
         return re;
     }
 }

