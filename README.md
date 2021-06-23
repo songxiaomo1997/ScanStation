@@ -29,7 +29,7 @@ detail: 漏洞详情
   links: #相关连接传入数组
     - https://www.google.com
 ```
-####重点参数说明
+#### 重点参数说明
 ##### pauload:
 一个payload是由一个payload和对应表达式组成，可以填入多个payload进行扫描并在expressions中做整体判断。
 以下为两个payload一个是sleep(1)对应就可以用sleep()判断是否存在时间沉睡，如果存在就返回true。
@@ -59,8 +59,8 @@ PS：如果headerscan为true则会像参数一样构造payload区别是header永
 ```
 string.contains(body,"error") #如果响应体中存咋error则返回true
 ```
-###规则示范
-####Form-Post
+### 规则示范
+#### Form-Post
 ```yaml
 name: Form-Post
 rules:
@@ -82,7 +82,7 @@ detail:
   links:
     - https://www.google.com
 ```
-####Json-Post
+#### Json-Post
 ```yaml
 name: Json-Post
 rules:
@@ -104,7 +104,7 @@ detail:
   links:
     - https://www.google.com
 ```
-####Form-GET
+#### Form-GET
 ```yaml
 name: Form-GET
 rules:
