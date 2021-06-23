@@ -1,0 +1,19 @@
+name: Form-Post
+rules:
+  method: POST #GET|POST
+  path: /vul/sql/POST #漏洞路径 /api/geturl/127.0.0.1*
+  originalParam: id=123&name=songxiaomo
+  vulParam: id=1&name #需要扫描的漏洞参数如:id=1&name=songxiaomo /api/geturl/*/*
+  header:
+    test-Post: test-Post123
+    tmp : tmp12321313213213
+  headerscan : true #true | false
+  payloads:
+    - payload: "and sleep(1)"
+      expression: string.contains(body,'Program Files') #sleep()判断是否存在时间延迟|string.contains(body,'Program Files')判断请求体是否存在关键字
+  expressions: true #默认值为true则输出payloads中判断成功所以结果。id=1和第一个payload组合为payload1 若存在多个参数如：id=1&name=songxiaomo 和两个pauload 则id=1与第一个paylaod和为payload1与第二个为pauload2以此类推
+  type: Form #form(OK)|Multi|json|path 后期加入
+detail:
+  author: songweizheng
+  links:
+    - https://www.google.com
