@@ -65,8 +65,11 @@ public class payload {
                     scannerBean scb = new scannerBean();
                     Map<String, String> headers = new HashMap<>();
                     Map<String, Object> params = new HashMap<>();
-                    headers.put(header.getKey(), payload.get("payload"));
-                    if(rule.getType().equals("Form")) {
+                    String tmp = payload.get("payload");
+                    //存在带外等替换
+                    tmp = replaceSpecialParam(tmp, "{{dnslog}}", rule.getOob());
+                    headers.put(header.getKey(), tmp);
+                    if(rule.getType().equals("Form")||rule.getType().equals("Multi")) {
                         params = rule.getParams(); //原始参数
                     }else if (rule.getType().equals("Json")){
                         replaceJson replaceJson = new replaceJson();
@@ -97,7 +100,10 @@ public class payload {
         for (String vul : rule.getVulParam().split("&")) {
             for (Map<String, String> payload : rule.getPayloads()) {
                 replaceJson replaceJson = new replaceJson();
-                Map params = replaceJson.replace(rule.getOriginalParam(),vul,payload.get("payload"));
+                String tmp = payload.get("payload");
+                //存在带外等替换
+                tmp = replaceSpecialParam(tmp, "{{dnslog}}", rule.getOob());
+                Map params = replaceJson.replace(rule.getOriginalParam(),vul,tmp);
 
                 scannerBean scb = new scannerBean();
                 scb.setUrl(rule.getUrl());
@@ -119,7 +125,7 @@ public class payload {
 
     @NotNull
     private String replaceSpecialParam(String tmp, String Special, String Param) {
-        if (tmp.contains("Special")) {
+        if (tmp.contains(Special)) {
             tmp = tmp.replace(Special, Param);//带外地址
         }
         return tmp;

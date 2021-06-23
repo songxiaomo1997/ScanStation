@@ -20,7 +20,7 @@ public class scanner {
 
     public static void main(String[] args) {
         String url = args[0];
-        String path =  args[1];
+        String path = args[1];
         String cookie;
         String param;
 
@@ -87,6 +87,7 @@ public class scanner {
         Map<String, Object> expressionsEnv = new HashMap<>();
         for (scannerBean scb : payloadAndExpression) {
             log.info(scb.getName() + "检测开始");
+            log.debug("payload信息" + scb.toString());
             Map response = httpClientNotSafe.request(scb);
             scb.setResult(judgment(vul, rule, scb, response));
             expressionsEnv.put(scb.getName(), scb.getResult());
