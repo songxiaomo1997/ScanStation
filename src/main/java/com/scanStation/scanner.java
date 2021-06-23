@@ -19,8 +19,8 @@ import java.util.Map;
 public class scanner {
 
     public static void main(String[] args) {
-        String url = args[0];
-        String path =  args[1];
+        String url = "http://120.26.84.240:9999";//args[0];
+        String path =  "/Users/song/Documents/GitHub/ScanStation/src/main/resources/";//args[1];
         String cookie;
         String param;
 

@@ -124,19 +124,21 @@ public final class CommonOkHttpClient {
         Map<String, String> response = new HashMap<String, String>();
 
 
-            if ("POST".equals(scb.getMethod())) {
-                if (scb.getType().equals("Json")){
-                    GsonBuilder builder = new GsonBuilder();
-                    Gson gson = builder.create();
-                    response = post(scb.getUrl(),gson.toJson(scb.getParam()),scb.getHeader(),null);
-                }else{
-                    response = post(scb.getUrl(), scb.getParam(), scb.getHeader(), null);
-                }
-            } else if ("GET".equals(scb.getMethod())) {
-                response = (Map<String, String>) get(scb.getUrl(), scb.getParam(), scb.getHeader(), null);
+        if ("POST".equals(scb.getMethod())) {
+            if (scb.getType().equals("Json")) {
+                GsonBuilder builder = new GsonBuilder();
+                Gson gson = builder.create();
+                response = post(scb.getUrl(), gson.toJson(scb.getParam()), scb.getHeader(), null);
+            } else if (scb.getType().equals("Multi")) {
+                response = Multipost(scb.getUrl(), scb.getParam(), scb.getHeader(), null,null);
             } else {
-                response.put("error", "not support " + scb.getMethod());
+                response = post(scb.getUrl(), scb.getParam(), scb.getHeader(), null);
             }
+        } else if ("GET".equals(scb.getMethod())) {
+            response = (Map<String, String>) get(scb.getUrl(), scb.getParam(), scb.getHeader(), null);
+        } else {
+            response.put("error", "not support " + scb.getMethod());
+        }
 
 
 //            if ("POST".equals(scb.getMethod())) {
@@ -265,26 +267,40 @@ public final class CommonOkHttpClient {
      * @Title: post
      * @Description: 文件上传(支持多文件), 有 callback为异步,callback传null为同步;异步时返回null
      */
-    public <T extends UploadFileBase> Map post(String url, Map<String, String> prarm, List<T> files, IAsyncCallback callback) {
+    public <T extends UploadFileBase> Map Multipost(String url, Map<String, Object> prarm,Map<String, String> headerExt, List<T> files, IAsyncCallback callback) {
         okhttp3.MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);
         if (prarm != null) {
-            prarm.forEach((k, v) -> builder.addFormDataPart(k, v));
+            prarm.forEach((k, v) -> builder.addFormDataPart(k, String.valueOf(v)));
         }
-        files.stream().forEach((file) -> {
-            if (file instanceof UploadFile) {
-                UploadFile fileTmp = (UploadFile) file;
-                builder.addFormDataPart(file.getPrarmName(), fileTmp.getFile().getName(), RequestBody.create(MediaType.parse(fileTmp.getMediaType()), fileTmp.getFile()));
-            } else if (file instanceof UploadByteFile) {
-                UploadByteFile fileTmp = (UploadByteFile) file;
-                builder.addFormDataPart(file.getPrarmName(), fileTmp.getFileName(), RequestBody.create(MediaType.parse(fileTmp.getMediaType()), fileTmp.getFileBytes()));
-            }
-        });
+        if (files!=null){
+            files.stream().forEach((file) -> {
+                if (file instanceof UploadFile) {
+                    UploadFile fileTmp = (UploadFile) file;
+                    builder.addFormDataPart(file.getPrarmName(), fileTmp.getFile().getName(), RequestBody.create(MediaType.parse(fileTmp.getMediaType()), fileTmp.getFile()));
+                } else if (file instanceof UploadByteFile) {
+                    UploadByteFile fileTmp = (UploadByteFile) file;
+                    builder.addFormDataPart(file.getPrarmName(), fileTmp.getFileName(), RequestBody.create(MediaType.parse(fileTmp.getMediaType()), fileTmp.getFileBytes()));
+                }
+            });
+        }
+
         MultipartBody uploadBody = builder.build();
-        Request request = new Request.Builder()
+        okhttp3.Request.Builder reqBuilder = new Request.Builder()
                 .post(uploadBody)
-                .url(url).
-                        build();
+                .url(url);
+        if (this.headerExt != null && this.headerExt.size() > 0) {
+            this.headerExt.forEach((key, value) -> {
+                reqBuilder.addHeader(key, value);
+            });
+        }
+        if (headerExt != null && headerExt.size() > 0) {
+            headerExt.forEach((key, value) -> {
+                reqBuilder.removeHeader(key);
+                reqBuilder.addHeader(key, value);
+            });
+        }
+        Request request = reqBuilder.build();
         return (Map) sendRequest(request, false, callback, null);
     }
 

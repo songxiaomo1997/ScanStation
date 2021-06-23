@@ -19,8 +19,8 @@ public class payload {
 
     public ArrayList<scannerBean> Generatepayload() {
         ArrayList<scannerBean> scanner = new ArrayList<>();
-        if ("Form".equals(rule.getType())) {
-            getformPayloads(scanner);
+        if ("Form".equals(rule.getType())||"Multi".equals(rule.getType())) {
+            getformORMultiPayloads(scanner,rule.getType());
         }if ("Json".equals(rule.getType())){
             getjsonPayload(scanner);
         }
@@ -28,7 +28,7 @@ public class payload {
         return scanner;
     }
 
-    private ArrayList<scannerBean> getformPayloads(ArrayList<scannerBean> scanner) {
+    private ArrayList<scannerBean> getformORMultiPayloads(ArrayList<scannerBean> scanner,String type) {
 
         int i = scanner.size();
         for (String vul : rule.getVulParam().split("&")) {
@@ -47,7 +47,7 @@ public class payload {
                 scb.setParam(params);
                 scb.setExpression(payload.get("expression"));
                 scb.setMethod(rule.getMethod());
-                scb.setType("Form");
+                scb.setType(type);
                 scanner.add(scb);
 //                log.debug(scb.toString());
                 i++;
