@@ -53,7 +53,7 @@ PS：如果headerscan为true则会像参数一样构造payload区别是header永
 ##### expression:
 ###### sleep()
 通过发送30次正常请求获取响应时间取响应时间平均差,如果带payload请求在平均差范围外则存在时间沉睡
-##### string.contains()
+###### string.contains()
 需要两个参数第一个为判断的位置支持:body,header,status,time。
 第二个参数为存在的字符串
 ```
