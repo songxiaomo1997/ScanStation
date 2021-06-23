@@ -189,7 +189,7 @@ public final class CommonOkHttpClient {
             });
         }
         Request request = reqBuilder.build();
-        log.debug("请求"+request.toString());
+//        log.debug("请求"+request.toString());
         return sendRequest(request, true, null, callback);
     }
 

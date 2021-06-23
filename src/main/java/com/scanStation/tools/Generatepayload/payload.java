@@ -49,7 +49,7 @@ public class payload {
                 scb.setMethod(rule.getMethod());
                 scb.setType("Form");
                 scanner.add(scb);
-                log.debug(scb.toString());
+//                log.debug(scb.toString());
                 i++;
             }
         }
