@@ -3,7 +3,7 @@
 
 ### 使用方法
 ```
-java -jar ScanStation -u|--url [目标地址] -p|--pocPath [需要加载的poc路径] -c|--cookie [(可选)全局cookie] -gP|--globalParam[(可选)全局参数]
+java -jar ScanStation -u|--url [目标地址] -p|--pocPath [需要加载的poc路径] -c|--cookie [(可选)全局cookie] -gP|--globalParam[(可选)全局参数] -hC|--headerConfig [(可选)全局请求头配置文件路径]
 ```
 #### 规则测试
 只会加载一个poc用于测试poc路径为文件路径
