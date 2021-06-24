@@ -3,7 +3,12 @@
 
 ### 使用方法
 ```
-java -jar ScanStation [目标地址] [需要加载的poc路径] [(可选)全局cookie] [(可选)全局参数]
+java -jar ScanStation -u|--url [目标地址] -p|--pocPath [需要加载的poc路径] -c|--cookie [(可选)全局cookie] -gP|--globalParam[(可选)全局参数]
+```
+#### 规则测试
+只会加载一个poc用于测试poc路径为文件路径
+```
+java -jar ScanStation -u [目标地址] -p [需要加载的poc路径] -debug
 ```
 
 ### poc说明
@@ -22,7 +27,7 @@ rules:
   payloads:
     - payload: "and sleep(1)" #payload为String类型请用""包裹
       expression: string.contains(body,'Program Files') #表达式判断响应中结果与预期结果是否相符
-  expressions: true #默认值为true则输出payloads中判断成功所以结果。id=1和第一个payload组合为payload0 若存在多个参数如：id=1&name=songxiaomo 和两个pauload 则id=1与第一个paylaod和为payload0与第二个为pauload1以此类推
+  expressions: true #默认值为true则输出payloads中判断成功所以结果。id=1和第一个payload组合为payload0 若存在多个参数如：id=1&name=songxiaomo 和两个payload 则id=1与第一个paylaod和为payload0与第二个为payload1以此类推
   type: Form #poc的请求方式目前支持Form和json 后续支持|Multi|xml|path
 detail: 漏洞详情
   author: songxiaomo #作者
@@ -30,7 +35,7 @@ detail: 漏洞详情
     - https://www.google.com
 ```
 #### 重点参数说明
-##### pauload:
+##### payload:
 一个payload是由一个payload和对应表达式组成，可以填入多个payload进行扫描并在expressions中做整体判断。
 以下为两个payload一个是sleep(1)对应就可以用sleep()判断是否存在时间沉睡，如果存在就返回true。
 ```yaml
