@@ -119,9 +119,6 @@ public class payload {
         return scanner;
     }
 
-    private ArrayList<scannerBean> getMultiPayload(ArrayList<scannerBean> scanner) {
-        return scanner;
-    }
 
     @NotNull
     private String replaceSpecialParam(String tmp, String Special, String Param) {

@@ -40,7 +40,10 @@ public class scanner {
         String[] children = dir.list();
         for (String file : children) {
             if (file.endsWith(".yaml")) {
-                scanner.scan(url, path + "/" + file, cookie, param, re);
+                scanner scan = new scanner();
+                vulBean vul = scan.vulGet(path + "/" + file, url, param, cookie);
+
+                scanner.scan(vul, re);
             }
         }
         for (String r : re) {
@@ -50,50 +53,37 @@ public class scanner {
     }
 
 
-    public void scan(String url, String filePath, String cookie, String param, ArrayList<String> re) {
+    public void scan(vulBean vul, ArrayList<String> re) {
         log.info("------------------------------------检测开始------------------------------------");
-        //初始化request
-        CommonOkHttpClient httpClientNotSafe = new CommonOkHttpClientBuilder().unSafe(true).build();
-        if (cookie != null && !"".equals(cookie)) {
-            //设置全局cookie
-            httpClientNotSafe.setCookie(cookie);
-            log.info("设置全局cookie值为:" + cookie);
-        }
-        if (param != null && !"".equals(param)) {
-            //通过String方式设置全局参数
-            httpClientNotSafe.setGlobalParam(param);
-            log.info("设置全局参数值为:" + param);
-        }
-        log.info("---初始化request完成");
+
         //加载规则
-        vulBean vul = new yamlTools(filePath).load();
         ruleBean rule = vul.getRules();
-        rule.setUrl(url);
-//        rule.setOob("q3fljw.dnslog.cn"); //设置dnslog
+
 
         log.info("加载规则:" + vul.getName());
         log.info("检测规则:" + rule.toString());
         log.info("---规则加载完成");
 
-        if (rule.isHeaderscan()) {
-            httpClientNotSafe.setHeaderExt(rule.getHeader());
-        }
+        //初始化request
+        CommonOkHttpClient httpClientNotSafe = getCommonOkHttpClient(rule.getCookie(), rule.getGlobalParam(), rule);
+        log.info("---初始化request完成");
 
         log.info("payload开始生成");
         payload paylaod = new payload(rule);
         ArrayList<scannerBean> payloadAndExpression = paylaod.Generatepayload();
         log.info("payload生成完成开始扫描");
 
+        //开始检测
         Map<String, Object> expressionsEnv = new HashMap<>();
         for (scannerBean scb : payloadAndExpression) {
             log.info(scb.getName() + "检测开始");
             log.debug("payload信息" + scb.toString());
-            Map response = httpClientNotSafe.request(scb);
-            scb.setResult(judgment(vul, rule, scb, response));
+            Map<String, String> response = httpClientNotSafe.request(scb);
+            scb.setResult(judgment(rule, scb, response));
             expressionsEnv.put(scb.getName(), scb.getResult());
 
             log.info(scb.getName() + "检测完成");
-            log.debug("payload信息" + scb.toString() + rule.getMethod());
+            log.debug("payload信息" + scb.toString() + scb.getMethod());
             log.info("响应头:" + response.get("status") + " 响应时间:" + response.get("time"));
 
         }
@@ -102,10 +92,10 @@ public class scanner {
         avitorTools avitor = new avitorTools();
         avitor.setEnv(expressionsEnv);
         avitor.setExpression(rule.getExpressions());
-        Boolean expressionsRe = false;
+        Boolean expressionsRe;
         try {
             expressionsRe = avitor.execAvitor();
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("表达式错误");
             log.debug(expressionsEnv);
             log.debug(rule.getExpressions());
@@ -123,7 +113,42 @@ public class scanner {
         log.info("------------------------------------检测完成------------------------------------");
     }
 
-    private Boolean judgment(vulBean vul, ruleBean rule, scannerBean scb, Map response) {
+    private vulBean vulGet(String file, String url, String globalParam, String cookie) {
+        vulBean vul = new yamlTools(file).load();
+        vul.getRules().setUrl(url);
+        ruleBean rule = vul.getRules();
+        rule.setUrl(url);
+        if (globalParam != null && !globalParam.equals("")) {
+            rule.setGlobalParam(globalParam);
+        }
+        if (cookie != null && !cookie.equals("")) {
+            rule.setCookie(cookie);
+        }
+        //rule.setOob("q3fljw.dnslog.cn"); //设置dnslog
+
+        return vul;
+    }
+
+    private CommonOkHttpClient getCommonOkHttpClient(String cookie, String param, ruleBean rule) {
+        CommonOkHttpClient httpClientNotSafe = new CommonOkHttpClientBuilder().unSafe(true).build();
+        if (cookie != null && !"".equals(cookie)) {
+            //设置全局cookie
+            httpClientNotSafe.setCookie(cookie);
+            log.info("设置全局cookie值为:" + cookie);
+        }
+        if (param != null && !"".equals(param)) {
+            //通过String方式设置全局参数
+            httpClientNotSafe.setGlobalParam(param);
+            log.info("设置全局参数值为:" + param);
+        }
+        if (rule.isHeaderscan()) {
+            httpClientNotSafe.setHeaderExt(rule.getHeader());
+        }
+        //后续通过配置文件获取全局请求头，支持外部获取和默认配置
+        return httpClientNotSafe;
+    }
+
+    private Boolean judgment(ruleBean rule, scannerBean scb, Map response) {
         if ("timeout...".equals(response.get("status"))) {
             log.error("检测超时");
             return false;

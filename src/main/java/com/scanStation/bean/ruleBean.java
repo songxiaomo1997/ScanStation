@@ -9,7 +9,7 @@ public class ruleBean {
 
     @Override
     public String toString() {
-        return "rule:{" +
+        return "ruleBean{" +
                 "url='" + url + '\'' +
                 ", method='" + method + '\'' +
                 ", path='" + path + '\'' +
@@ -20,6 +20,8 @@ public class ruleBean {
                 ", payloadlength=" + payloadlength +
                 ", oob='" + oob + '\'' +
                 ", oobflag='" + oobflag + '\'' +
+                ", globalParam='" + globalParam + '\'' +
+                ", cookie='" + cookie + '\'' +
                 ", header=" + header +
                 ", headerscan=" + headerscan +
                 ", type='" + type + '\'' +
@@ -36,17 +38,34 @@ public class ruleBean {
     private int payloadlength;
     private String oob;
     private String oobflag;
-
+    private String globalParam;
+    private String cookie;
     private Map<String, String> header;
     private boolean headerscan;
     private String type;
+
+    public String getGlobalParam() {
+        return globalParam;
+    }
+
+    public void setGlobalParam(String globalParam) {
+        this.globalParam = globalParam;
+    }
+
+    public String getCookie() {
+        return cookie;
+    }
+
+    public void setCookie(String cookie) {
+        this.cookie = cookie;
+    }
 
     public void setOobflag(String oobflag) {
         this.oobflag = oobflag;
     }
 
     public Map<String, String> getHeader() {
-        if (this.header==null){
+        if (this.header == null) {
             header = new HashMap<>();
         }
         return header;
