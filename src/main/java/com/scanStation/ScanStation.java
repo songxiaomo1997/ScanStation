@@ -6,7 +6,11 @@ import com.scanStation.bean.resultBean;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ScanStation {
     @Parameter(names = {"-u","--url"},description = "url",required = true)
@@ -27,6 +31,9 @@ public class ScanStation {
     @Parameter(names = {"-hC","--headerConfig"}, description = "headerConfig")
     private String headerConfig;
 
+    @Parameter(names = {"-t","--threads"}, description = "threads")
+    private int threads=10;
+
     public static void main(String...args) {
         ScanStation scanStation = new ScanStation();
         JCommander.newBuilder().addObject(scanStation).build().parse(args);
@@ -36,15 +43,29 @@ public class ScanStation {
     public void run(){
         ArrayList<resultBean> re = new ArrayList<>();
         if (!debug){
+
             File dir = new File(pocPath);
             String[] children = dir.list();
+            Queue<String> files = new LinkedList<>();
             for (String file : children) {
                 if (file.endsWith(".yaml")) {
-                    scanner scan = new scanner(pocPath + "/" + file,url,globalParam,cookie,headerConfig);
-                    resultBean result = scan.scan();
-                    if(result!=null){
-                        re.add(result);
+                    files.offer(pocPath + "/" + file);
+                }
+            }
+            ExecutorService es = Executors.newFixedThreadPool(threads);
+            int size = files.size();
+            boolean closeable = false;
+            while (!closeable){
+                for (int i = 0; i < size; i++) {
+                    String tmp = files.poll();
+                    if (tmp != null) {
+                        es.submit(new ScanThread(String.valueOf(i),tmp,url,globalParam,cookie,headerConfig,re));
+                    } else {
+                        es.shutdown();
                     }
+                }
+                if (files.size() == 0 && es.isTerminated()) {
+                    closeable = true;
                 }
             }
         }else {

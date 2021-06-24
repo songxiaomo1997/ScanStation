@@ -2,6 +2,7 @@ package com.scanStation;
 
 import com.scanStation.bean.resultBean;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class ScanThread extends Thread {
@@ -13,9 +14,9 @@ public class ScanThread extends Thread {
     String globalParam;
     String cookie;
     String headerConfig;
-    resultBean result;
+    ArrayList<resultBean> result;
 
-    ScanThread(String name,String file, String url, String globalParam, String cookie, String headerConfig,resultBean result){
+    ScanThread(String name,String file, String url, String globalParam, String cookie, String headerConfig, ArrayList<resultBean> result){
         this.threadName=name;
         this.file = file;
         this.url = url;
@@ -26,7 +27,10 @@ public class ScanThread extends Thread {
     }
     public void run() {
         scanner scan = new scanner(file,url,globalParam,cookie,headerConfig);
-        result = scan.scan();
+        resultBean re = scan.scan();
+        if(re!=null) {
+            result.add(re);
+        }
     }
 
     public void start() {
