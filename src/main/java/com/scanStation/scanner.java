@@ -1,63 +1,49 @@
 package com.scanStation;
 
-import com.scanStation.bean.ruleBean;
-import com.scanStation.bean.scannerBean;
-import com.scanStation.bean.vulBean;
-import com.scanStation.commonOkHttp.CommonOkHttpClient;
-import com.scanStation.commonOkHttp.CommonOkHttpClientBuilder;
+import com.scanStation.bean.*;
+import com.scanStation.commonOkHttp.*;
 import com.scanStation.tools.Generatepayload.payload;
-import com.scanStation.tools.avitorTools;
-import com.scanStation.tools.yamlTools;
+import com.scanStation.tools.*;
 import lombok.extern.log4j.Log4j2;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Log4j2
 public class scanner {
+    vulBean vul;
+    String headerConfig;
 
-    public static void main(String[] args) {
-        String url = args[0];
-        String path = args[1];
-        String cookie;
-        String param;
-
-        if (args.length >= 3) {
-            cookie = args[2];
-        } else {
-            cookie = "";
-        }
-        if (args.length >= 4) {
-            param = args[3];
-        } else {
-            param = "";
-        }
-        scanner scanner = new scanner();
-        ArrayList<String> re = new ArrayList<>();
-        File dir = new File(path);
-        String[] children = dir.list();
-        for (String file : children) {
-            if (file.endsWith(".yaml")) {
-                scanner scan = new scanner();
-                vulBean vul = scan.vulGet(path + "/" + file, url, param, cookie);
-
-                scanner.scan(vul, re);
-            }
-        }
-        for (String r : re) {
-            System.out.println(r);
-        }
-
+    public String getHeaderConfig() {
+        return headerConfig;
     }
 
+    public void setHeaderConfig(String headerConfig) {
+        this.headerConfig = headerConfig;
+    }
 
-    public void scan(vulBean vul, ArrayList<String> re) {
+    public vulBean getVul() {
+        return vul;
+    }
+
+    public void setVul(vulBean vul) {
+        this.vul = vul;
+    }
+
+    public scanner(String file, String url) {
+        new scanner(file, url, "", "", "");
+    }
+
+    public scanner(String file, String url, String param, String cookie, String headerConfig) {
+        this.headerConfig = headerConfig;
+        this.vul = this.vulGet(file, url, param, cookie);
+    }
+
+    public resultBean scan() {
         log.info("------------------------------------检测开始------------------------------------");
 
         //加载规则
-        ruleBean rule = vul.getRules();
+        ruleBean rule = this.vul.getRules();
 
 
         log.info("加载规则:" + vul.getName());
@@ -102,15 +88,25 @@ public class scanner {
             expressionsRe = false;
         }
         if (expressionsRe) {
-            for (scannerBean scb : payloadAndExpression) {
-                if (scb.getResult()) {
-                    re.add("++++++++++++vulFind:" + vul.getName() + "-" + scb.toString() + " " + vul.getDetail());
-                    log.info("++++++++++++vulFind:" + vul.getName() + "-" + scb.toString() + " " + vul.getDetail());
+            ArrayList<scannerBean> result = new ArrayList<>();
+            if (payloadAndExpression.size() > 0 && payloadAndExpression != null) {
+                for (scannerBean scb : payloadAndExpression) {
+                    if (scb.getResult()) {
+                        result.add(scb);
+                        log.info("++++++++++++vulFind:" + vul.getName() + "-" + scb.toString() + " " + vul.getDetail());
+                    }
+                }
+                if (result != null && result.size() > 0) {
+                    resultBean results = new resultBean(vul.getName(), vul.getDetail(), result);
+                    return results;
+                } else {
+                    return null;
                 }
             }
         }
         log.info("---expressions判断完成");
         log.info("------------------------------------检测完成------------------------------------");
+        return null;
     }
 
     private vulBean vulGet(String file, String url, String globalParam, String cookie) {
@@ -143,6 +139,15 @@ public class scanner {
         }
         if (rule.isHeaderscan()) {
             httpClientNotSafe.setHeaderExt(rule.getHeader());
+        }
+        if (this.headerConfig != null && !"".equals(this.headerConfig)) {
+            Map<String, String> header = new yamlTools().load(headerConfig);
+            httpClientNotSafe.setHeaderExt(header);
+        }else {
+            System.out.println(this.getClass().getClassLoader().getResourceAsStream("config.yaml"));
+            Yaml yaml = new Yaml();
+            Map<String, String> header = yaml.loadAs(this.getClass().getClassLoader().getResourceAsStream("config.yaml"),Map.class);
+            httpClientNotSafe.setHeaderExt(header);
         }
         //后续通过配置文件获取全局请求头，支持外部获取和默认配置
         return httpClientNotSafe;

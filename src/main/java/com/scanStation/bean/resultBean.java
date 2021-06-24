@@ -1,20 +1,19 @@
 package com.scanStation.bean;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class resultBean {
+
+
     @Override
     public String toString() {
         return "resultBean{" +
                 "name='" + name + '\'' +
                 ", detail=" + detail +
-                ", scannerBean=" + scannerBean +
+                ", scannerBean=" + scannerBeans +
                 '}';
     }
-
-    private String name;
-    private Map<String, Object> detail;
-    private scannerBean scannerBean;
 
     public String getName() {
         return name;
@@ -32,11 +31,24 @@ public class resultBean {
         this.detail = detail;
     }
 
-    public com.scanStation.bean.scannerBean getScannerBean() {
-        return scannerBean;
+    public ArrayList<scannerBean> getScannerBeans() {
+        return scannerBeans;
     }
 
-    public void setScannerBean(com.scanStation.bean.scannerBean scannerBean) {
-        this.scannerBean = scannerBean;
+    public void setScannerBeans(ArrayList<scannerBean> scannerBeans) {
+        this.scannerBeans = scannerBeans;
     }
+    public resultBean(){
+
+    }
+    public resultBean(String name, Map<String, Object> detail, ArrayList<scannerBean> scannerBeans) {
+        this.name = name;
+        this.detail = detail;
+        this.scannerBeans = scannerBeans;
+    }
+
+    private String name;
+    private Map<String,Object> detail;
+    private ArrayList<scannerBean> scannerBeans;
+
 }
