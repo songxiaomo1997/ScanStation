@@ -12,6 +12,8 @@ rules:
       expression: string.contains(body,'"reason":"success"')
     #- payload: ";SELECT PG_SLEEP(5)--"
     # expression: string.contains(body,'Program Files') #sleep()判断是否存在时间延迟|string.contains(body,'Program Files')判断请求体是否存在关键字
+#  payloadpre : "'"
+#  payloadend : "--"
   expressions: (payload0==true && payload1 == false) || payload2 #默认值为true则输出payloads中判断成功所以结果。id=1和第一个payload组合为payload1 若存在多个参数如：id=1&name=songxiaomo 和两个pauload 则id=1与第一个paylaod和为payload1与第二个为pauload2以此类推
   type: Multi #form(OK)|Multi|json|path 后期加入
 detail:

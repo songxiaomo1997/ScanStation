@@ -102,3 +102,4 @@ src/main/resources/OK/*
 将删除 src/test/java/org/
 ScanStation.iml
 src/main/java/com/scanStation/test.java
+src/main/resources/.DS_Store

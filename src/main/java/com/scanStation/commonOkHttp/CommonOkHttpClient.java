@@ -122,8 +122,6 @@ public final class CommonOkHttpClient {
 
     public Map<String, String> request(scannerBean scb) {
         Map<String, String> response = new HashMap<String, String>();
-
-
         if ("POST".equals(scb.getMethod())) {
             if (scb.getType().equals("Json")) {
                 GsonBuilder builder = new GsonBuilder();
