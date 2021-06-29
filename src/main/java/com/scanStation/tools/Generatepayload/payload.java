@@ -41,6 +41,7 @@ public class payload {
                 //组装payload放入
                 params.put(var[0], var.length >= 2 ? var[1] + tmp : tmp); //暂时直接加入
 
+                //scannerBean生成
                 scannerBean scb = new scannerBean();
                 scb.setUrl(rule.getUrl());
                 scb.setName("payload" + i);
