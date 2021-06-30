@@ -3,6 +3,8 @@ package com.scanStation;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.scanStation.bean.resultBean;
+import com.scanStation.bean.vulBean;
+import com.scanStation.tools.yamlTools;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +45,7 @@ public class ScanStation {
         ScanStation scanStation = new ScanStation();
         try {
             JCommander.newBuilder().addObject(scanStation).build().parse(args);
-        }catch (com.beust.jcommander.ParameterException e){
+        } catch (com.beust.jcommander.ParameterException e) {
             log.error("输入错误");
             return;
         }
@@ -53,23 +55,23 @@ public class ScanStation {
     public void run() {
         ArrayList<resultBean> re = new ArrayList<>();
 
-        if(target!=null&&!target.equals("")){
-            ArrayList<String> targets =getTargets(this.target);
+        if (target != null && !target.equals("")) {
+            ArrayList<String> targets = getTargets(this.target);
             System.out.println(targets);
-            if (targets!=null){
-                for (String t : targets){
-                    log.info(t+"开始检测------------------------------------------------------------------------");
-                    ActiveScan(re,t);
-                    log.info(t+"检测结束------------------------------------------------------------------------");
+            if (targets != null) {
+                for (String t : targets) {
+                    log.info(t + "开始检测------------------------------------------------------------------------");
+                    ActiveScan(re, t);
+                    log.info(t + "检测结束------------------------------------------------------------------------");
                 }
             }
-        }else if(url!=null&&!url.equals("")) {
-            log.info(this.url+"开始检测------------------------------------------------------------------------");
+        } else if (url != null && !url.equals("")) {
+            log.info(this.url + "开始检测------------------------------------------------------------------------");
             ActiveScan(re, this.url);
-            log.info(this.url+"检测结束------------------------------------------------------------------------");
+            log.info(this.url + "检测结束------------------------------------------------------------------------");
 
         }
-        if (re.size()>0) {
+        if (re.size() > 0) {
             for (resultBean r : re) {
                 System.out.println(r.toString() + "\r\n--------------------------------------------\r\n");
             }
@@ -82,10 +84,10 @@ public class ScanStation {
         try {
             BufferedReader in = new BufferedReader(new FileReader(target));
             while ((tmp = in.readLine()) != null) {
-                if(!tmp.equals("")){
+                if (!tmp.equals("")) {
                     targets.add(tmp);
                 }
-                log.info("添加目标"+tmp);
+                log.info("添加目标" + tmp);
             }
         } catch (FileNotFoundException e) {
             log.debug(target + "文件不存在");
@@ -97,21 +99,20 @@ public class ScanStation {
         return targets;
     }
 
-    private void ActiveScan(ArrayList<resultBean> re,String url) {
-
+    private void ActiveScan(ArrayList<resultBean> re, String url) {
         if (!debug) {
             //多线程扫描默认10个线程
             Queue<String> files = getPocs(this.pocPath);
-            scanThread(re, files,url);
-
+            scanThread(re, files, url);
         } else {
-            scanner scan = new scanner(pocPath, url, globalParam, cookie, headerConfig);
+            yamlTools yamlTools = new yamlTools();
+            vulBean vul = yamlTools.vulGet(pocPath, url, globalParam, cookie);
+            scanner scan = new scanner(vul, headerConfig);
             resultBean result = scan.scan();
             if (result != null) {
                 re.add(result);
             }
         }
-
     }
 
     @NotNull
@@ -120,14 +121,12 @@ public class ScanStation {
         String[] children = dir.list();
         Queue<String> files = new LinkedList<>();
         for (String file : children) {
-            if (file.endsWith(".yaml")) {
-                files.offer(pocPath + "/" + file);
-            }
+            files.offer(pocPath + "/" + file);
         }
         return files;
     }
 
-    private void scanThread(ArrayList<resultBean> re, Queue<String> files,String url) {
+    private void scanThread(ArrayList<resultBean> re, Queue<String> files, String url) {
         ExecutorService es = Executors.newFixedThreadPool(threads);
         int size = files.size();
         boolean closeable = false;

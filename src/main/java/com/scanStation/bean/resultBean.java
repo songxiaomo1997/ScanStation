@@ -11,7 +11,7 @@ public class resultBean {
         return "resultBean{" +
                 "name='" + name + '\'' +
                 ", detail=" + detail +
-                ", scannerBean=" + scannerBeans +
+                ", scannerBean=" + scannerinfo +
                 '}';
     }
 
@@ -31,24 +31,24 @@ public class resultBean {
         this.detail = detail;
     }
 
-    public ArrayList<scannerBean> getScannerBeans() {
-        return scannerBeans;
+    public ArrayList<scannerBean> getScannerinfo() {
+        return scannerinfo;
     }
 
-    public void setScannerBeans(ArrayList<scannerBean> scannerBeans) {
-        this.scannerBeans = scannerBeans;
+    public void setScannerinfo(ArrayList<scannerBean> scannerinfo) {
+        this.scannerinfo = scannerinfo;
     }
     public resultBean(){
 
     }
-    public resultBean(String name, Map<String, Object> detail, ArrayList<scannerBean> scannerBeans) {
+    public resultBean(String name, Map<String, Object> detail, ArrayList<scannerBean> scannerinfo) {
         this.name = name;
         this.detail = detail;
-        this.scannerBeans = scannerBeans;
+        this.scannerinfo = scannerinfo;
     }
 
     private String name;
     private Map<String,Object> detail;
-    private ArrayList<scannerBean> scannerBeans;
+    private ArrayList<scannerBean> scannerinfo;
 
 }

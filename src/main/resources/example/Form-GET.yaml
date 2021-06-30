@@ -7,7 +7,7 @@ rules:
   header:
     test-Post: test-Post123
     tmp : tmp12321313213213
-  headerscan : false #true | false
+  headerscan : true #true | false
   payloads:
     - payload: "and sleep(1)"
       expression: string.contains(body,'Program Files') #sleep()判断是否存在时间延迟|string.contains(body,'Program Files')判断请求体是否存在关键字

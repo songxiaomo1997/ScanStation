@@ -19,27 +19,26 @@ public class payload {
 
     public ArrayList<scannerBean> Generatepayload() {
         ArrayList<scannerBean> scanner = new ArrayList<>();
-        if ("Form".equals(rule.getType())||"Multi".equals(rule.getType())) {
-            getformORMultiPayloads(scanner,rule.getType());
-        }if ("Json".equals(rule.getType())){
-            getjsonPayload(scanner);
-        }
+        payloadsget(scanner);
         getheaderPayload(scanner);
         return scanner;
     }
-
-    private ArrayList<scannerBean> getformORMultiPayloads(ArrayList<scannerBean> scanner,String type) {
+    private ArrayList<scannerBean> payloadsget(ArrayList<scannerBean> scanner) {
 
         int i = scanner.size();
         for (String vul : rule.getVulParam().split("&")) {
             for (Map<String, String> payload : rule.getPayloads()) {
-                Map<String, Object> params = rule.getParams();
-                String[] var = vul.split("=");
+                Map<String, Object> params = new HashMap<>();
                 String tmp = payload.get("payload");
-                //存在带外等替换
-                tmp = replaceSpecialParam(tmp, "{{dnslog}}", rule.getOob());
-                //组装payload放入
-                params.put(var[0], var.length >= 2 ? var[1] + tmp : tmp); //暂时直接加入
+
+               if ("Form".equals(rule.getType())||"Multi".equals(rule.getType())){
+                   params = rule.getParams();
+                   String[] var = vul.split("=");
+                   params.put(var[0], var.length >= 2 ? var[1] + tmp : tmp); //如果有参数直接在参数后加入没有则直接加入
+               }else if ("Json".equals(rule.getType())){
+                   replaceJson replaceJson = new replaceJson();
+                   params = replaceJson.replace(rule.getOriginalParam(),vul,tmp);
+               }
 
                 //scannerBean生成
                 scannerBean scb = new scannerBean();
@@ -48,9 +47,8 @@ public class payload {
                 scb.setParam(params);
                 scb.setExpression(payload.get("expression"));
                 scb.setMethod(rule.getMethod());
-                scb.setType(type);
+                scb.setType(rule.getType());
                 scanner.add(scb);
-//                log.debug(scb.toString());
                 i++;
             }
         }
@@ -68,7 +66,6 @@ public class payload {
                     Map<String, Object> params = new HashMap<>();
                     String tmp = payload.get("payload");
                     //存在带外等替换
-                    tmp = replaceSpecialParam(tmp, "{{dnslog}}", rule.getOob());
                     headers.put(header.getKey(), tmp);
                     if(rule.getType().equals("Form")||rule.getType().equals("Multi")) {
                         params = rule.getParams(); //原始参数
@@ -96,38 +93,14 @@ public class payload {
         return scanner;
     }
 
-    private ArrayList<scannerBean> getjsonPayload(ArrayList<scannerBean> scanner) {
-        int i = scanner.size();
-        for (String vul : rule.getVulParam().split("&")) {
-            for (Map<String, String> payload : rule.getPayloads()) {
-                replaceJson replaceJson = new replaceJson();
-                String tmp = payload.get("payload");
-                //存在带外等替换
-                tmp = replaceSpecialParam(tmp, "{{dnslog}}", rule.getOob());
-                Map params = replaceJson.replace(rule.getOriginalParam(),vul,tmp);
 
-                scannerBean scb = new scannerBean();
-                scb.setUrl(rule.getUrl());
-                scb.setName("payload" + i);
-                scb.setParam(params);
-                scb.setExpression(payload.get("expression"));
-                scb.setMethod(rule.getMethod());
-                scanner.add(scb);
-                scb.setType("Json");
-                i++;
-            }
-        }
-        return scanner;
-    }
-
-
-    @NotNull
-    private String replaceSpecialParam(String tmp, String Special, String Param) {
-        if (tmp.contains(Special)) {
-            tmp = tmp.replace(Special, Param);//带外地址
-        }
-        return tmp;
-    }
+//    @NotNull
+//    private String replaceSpecialParam(String tmp, String Special, String Param) {
+//        if (tmp.contains(Special)) {
+//            tmp = tmp.replace(Special, Param);//带外地址
+//        }
+//        return tmp;
+//    }
 
 
 }

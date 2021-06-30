@@ -1,18 +1,30 @@
 package com.scanStation;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.scanStation.bean.*;
 import com.scanStation.commonOkHttp.*;
 import com.scanStation.tools.Generatepayload.payload;
 import com.scanStation.tools.*;
 import lombok.extern.log4j.Log4j2;
+import org.python.core.PyDictionary;
+import org.python.core.*;
+import org.python.core.PyFunction;
+import org.python.util.PythonInterpreter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.*;
 
+/**
+ * 分离获取vulbean
+ * 初始化只传入一个vulbean对象
+ **/
 @Log4j2
 public class scanner {
     vulBean vul;
     String headerConfig;
+    String pyfile;
 
     public String getHeaderConfig() {
         return headerConfig;
@@ -30,13 +42,23 @@ public class scanner {
         this.vul = vul;
     }
 
-    public scanner(String file, String url) {
-        new scanner(file, url, "", "", "");
+    public scanner(vulBean vul, String headerConfig) {
+        this.vul = vul;
+        this.headerConfig = headerConfig;
     }
 
-    public scanner(String file, String url, String param, String cookie, String headerConfig) {
-        this.headerConfig = headerConfig;
-        this.vul = this.vulGet(file, url, param, cookie);
+
+    public resultBean pyscan() {
+        resultBean result = new resultBean();
+        PythonInterpreter interpreter = new PythonInterpreter();
+        interpreter.execfile(pyfile);
+        PyFunction pyFunction = interpreter.get("run", PyFunction.class);
+        PyDictionary pyargs = new PyDictionary();
+        pyargs.put("url", "1.1.1.1"); //传入参数标准 ip port url cookie,全局参数,全局请求头
+        PyObject pyObject = pyFunction.__call__(pyargs);
+        String json = String.valueOf(pyObject);
+        //对返回数据进行处理判断如果存在则封装一个resultBean返回
+        return result;
     }
 
     public resultBean scan() {
@@ -89,14 +111,14 @@ public class scanner {
         }
         if (expressionsRe) {
             ArrayList<scannerBean> result = new ArrayList<>();
-            if (payloadAndExpression.size() > 0 && payloadAndExpression != null) {
+            if (payloadAndExpression.size() > 0) {
                 for (scannerBean scb : payloadAndExpression) {
                     if (scb.getResult()) {
                         result.add(scb);
                         log.info("++++++++++++vulFind:" + vul.getName() + "-" + scb.toString() + " " + vul.getDetail());
                     }
                 }
-                if (result != null && result.size() > 0) {
+                if (result.size() > 0) {
                     resultBean results = new resultBean(vul.getName(), vul.getDetail(), result);
                     return results;
                 } else {
@@ -107,22 +129,6 @@ public class scanner {
         log.info("---expressions判断完成");
         log.info("------------------------------------检测完成------------------------------------");
         return null;
-    }
-
-    private vulBean vulGet(String file, String url, String globalParam, String cookie) {
-        vulBean vul = new yamlTools(file).load();
-        vul.getRules().setUrl(url);
-        ruleBean rule = vul.getRules();
-        rule.setUrl(url);
-        if (globalParam != null && !globalParam.equals("")) {
-            rule.setGlobalParam(globalParam);
-        }
-        if (cookie != null && !cookie.equals("")) {
-            rule.setCookie(cookie);
-        }
-        //rule.setOob("q3fljw.dnslog.cn"); //设置dnslog
-
-        return vul;
     }
 
     private CommonOkHttpClient getCommonOkHttpClient(String cookie, String param, ruleBean rule) {
@@ -143,10 +149,10 @@ public class scanner {
         if (this.headerConfig != null && !"".equals(this.headerConfig)) {
             Map<String, String> header = new yamlTools().load(headerConfig);
             httpClientNotSafe.setHeaderExt(header);
-        }else {
+        } else {
             System.out.println(this.getClass().getClassLoader().getResourceAsStream("config.yaml"));
             Yaml yaml = new Yaml();
-            Map<String, String> header = yaml.loadAs(this.getClass().getClassLoader().getResourceAsStream("config.yaml"),Map.class);
+            Map<String, String> header = yaml.loadAs(this.getClass().getClassLoader().getResourceAsStream("config.yaml"), Map.class);
             httpClientNotSafe.setHeaderExt(header);
         }
         //后续通过配置文件获取全局请求头，支持外部获取和默认配置

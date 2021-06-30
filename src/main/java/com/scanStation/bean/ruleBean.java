@@ -2,11 +2,10 @@ package com.scanStation.bean;
 
 import java.util.*;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.util.DigestUtils;
 
 public class ruleBean {
-
-
     @Override
     public String toString() {
         return "ruleBean{" +
@@ -33,7 +32,7 @@ public class ruleBean {
     private String path;
     private String originalParam;
     private String vulParam;
-    private List<Map> payloads;
+    private List<Map<String, String>> payloads;
     private String expressions;
     private int payloadlength;
     private String oob;
@@ -127,51 +126,6 @@ public class ruleBean {
         return params;
     }
 
-    /**
-     * 返回一个二维数组[0][0]是第一组payload
-     * 数组第一排第一个[0][0]是组装好的payload,第二排第一个是对应的表达式[1][0]
-     * [payload1,payload2]
-     * [expression1,expression2]
-     *
-     * @return
-     **/
-    public ArrayList<scannerBean> Generatepayload() {
-
-        ArrayList<scannerBean> scanner = new ArrayList<>();
-        int i = 1;
-        for (String vul : vulParam.split("&")) {
-            for (Map<String, String> payload : payloads) {
-                Map<String, Object> params = getParams();
-                String[] var = vul.split("=");
-                String tmp = payload.get("payload");
-                if (tmp.contains("{{dnslog}}")) {
-                    tmp = tmp.replace("{{dnslog}}", this.getOob());//带外地址
-                }
-
-                params.put(var[0], var.length >= 2 ? var[1] + tmp : tmp); //暂时直接加入
-
-                scannerBean scb = new scannerBean();
-                scb.setUrl(getUrl());
-                scb.setName("payload" + i);
-                scb.setParam(params);
-                scb.setExpression((String) payload.get("expression"));
-                scb.setMethod(method);
-                scanner.add(scb);
-                i++;
-            }
-        }
-
-        return scanner;
-        /**
-         * payload0 :
-         *      a:123
-         *      b:PG_SLEEP();
-         * expression0 :
-         *      sleep()
-         *
-         * **/
-    }
-
     public int getPayloadlength() {
         return payloadlength;
     }
@@ -212,11 +166,14 @@ public class ruleBean {
         this.vulParam = vulParam;
     }
 
-    public List<Map> getPayloads() {
+    public List<Map<String, String>> getPayloads() {
         return payloads;
     }
 
-    public void setPayloads(List<Map> payloads) {
+    public void setPayloads(List<Map<String, String>> payloads) {
+        for (Map<String, String> payload : payloads) {
+            replaceSpecialParam(payload.get("payload"), "{{dnslog}}", "getOob()");
+        }
         this.payloads = payloads;
         this.payloadlength = payloads.size();
     }
@@ -227,6 +184,13 @@ public class ruleBean {
 
     public void setUrl(String url) {
         this.url = url + getPath();
+    }
+
+    private String replaceSpecialParam(String tmp, String Special, String Param) {
+        if (tmp.contains(Special)) {
+            tmp = tmp.replace(Special, Param);//带外地址
+        }
+        return tmp;
     }
 
 }
