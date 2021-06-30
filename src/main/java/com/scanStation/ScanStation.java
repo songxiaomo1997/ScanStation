@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Log4j2
 public class ScanStation {
@@ -119,7 +120,7 @@ public class ScanStation {
     private Queue<String> getPocs(String pocPath) {
         File dir = new File(pocPath);
         String[] children = dir.list();
-        Queue<String> files = new LinkedList<>();
+        Queue<String> files = new LinkedBlockingQueue<>();
         for (String file : children) {
             files.offer(pocPath + "/" + file);
         }
