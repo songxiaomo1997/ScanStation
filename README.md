@@ -31,7 +31,7 @@ java -jar ScanStation -u|--url [目标地址] --pocPath [需要加载的poc路�
 -p | --pocPath [需要加载的poc路径] 需要加载的poc的路径,需要在目录下放需要加载规则 如:~/Dowloads/rules
 -c|--cookie (可选)全局cookie 设置全局的cookie 将请求中的cookie值复制即可
 -gP|--globalParam [(可选)全局参数] 设置全局参数 在请求时会自动带上该参数进行请求
--hC|--headerConfig [(可选)全局请求头配置文件路径]
+-hC|--headerConfig [(可选)全局请求头配置文件路径] 配置文件为yaml类型格式为: test : 12321321 
 -t | --threads [(可选) 线程数默认10个线程] 设置线程数
 ```
 #### 规则测试
