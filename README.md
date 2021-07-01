@@ -1,12 +1,41 @@
 # ScanStation
-一个可以自定规则的主动扫描器(未来会变成被动扫描器)
+一个可以自定规则的主动扫描器
+
+#### 目前支持
+- [x] 自定义规则
+- [x] 全局参数设置 请求头,参数,cookie
+- [x] 多线程扫描
+- [x] 多目标扫描
+- [x] POST,GET类型扫描
+- [x] json,Multi,form类型请求扫描
+- [x] 时间延迟判断,响应内容判断
+#### 后续支持
+- [ ] 请求方式PUT,DELETE等
+- [ ] 支持多语言poc,如python
+- [ ] 请求类型支持xml类型
+- [ ] payload表达式增强,支持payload组，自定payload变量
+- [ ] 支持被动扫描
+- [ ] 支持反连平台带外检测
+- [ ] 支持更多表达式检测结果
+- [ ] 支持grpc扫描
+- [ ] 分布式部署
 
 ### 使用方法
 ```
-java -jar ScanStation -u|--url [目标地址] -p|--pocPath [需要加载的poc路径] -c|--cookie [(可选)全局cookie] -gP|--globalParam[(可选)全局参数] -hC|--headerConfig [(可选)全局请求头配置文件路径]
+java -jar ScanStation -u|--url [目标地址] --pocPath [需要加载的poc路径] -c|--cookie [(可选)全局cookie] -gP|--globalParam[(可选)全局参数] -hC|--headerConfig [(可选)全局请求头配置文件路径] -t 
+```
+####参数说明
+```
+-u | --url [目标地址] 如htts://127.0.0.1:1234
+--target [目标存放文本位置] 从txt文本获取需要扫描的url进行扫描 
+--pocPath [需要加载的poc路径] 需要加载的poc的路径,需要在目录下放需要加载规则 如:~/Dowloads/rules
+-c|--cookie (可选)全局cookie 设置全局的cookie 将请求中的cookie值复制即可
+-gP|--globalParam [(可选)全局参数] 设置全局参数 在请求时会自动带上该参数进行请求
+-hC|--headerConfig [(可选)全局请求头配置文件路径]
+-t | --threads [(可选) 线程数默认10个线程] 设置线程数
 ```
 #### 规则测试
-只会加载一个poc用于测试poc路径为文件路径
+只会加载一个poc用于测试poc路径为文件路径,如poc路径为~/Dowloads/rules/test.yaml则填入即可
 ```
 java -jar ScanStation -u [目标地址] -p [需要加载的poc路径] -debug
 ```
