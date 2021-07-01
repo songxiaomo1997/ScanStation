@@ -28,7 +28,7 @@ java -jar ScanStation -u|--url [目标地址] --pocPath [需要加载的poc路�
 ```
 -u | --url [目标地址] 如htts://127.0.0.1:1234
 --target [目标存放文本位置] 从txt文本获取需要扫描的url进行扫描 
---pocPath [需要加载的poc路径] 需要加载的poc的路径,需要在目录下放需要加载规则 如:~/Dowloads/rules
+-p | --pocPath [需要加载的poc路径] 需要加载的poc的路径,需要在目录下放需要加载规则 如:~/Dowloads/rules
 -c|--cookie (可选)全局cookie 设置全局的cookie 将请求中的cookie值复制即可
 -gP|--globalParam [(可选)全局参数] 设置全局参数 在请求时会自动带上该参数进行请求
 -hC|--headerConfig [(可选)全局请求头配置文件路径]
