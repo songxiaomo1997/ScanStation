@@ -6,6 +6,13 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.util.DigestUtils;
 
 public class ruleBean {
+    /**
+     * 构造时从文件获取后设置
+     * url
+     * path
+     * originalParam
+     * vulParam
+     * */
     @Override
     public String toString() {
         return "ruleBean{" +

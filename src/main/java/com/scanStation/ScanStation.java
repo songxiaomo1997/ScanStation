@@ -120,7 +120,7 @@ public class ScanStation {
     private Queue<String> getPocs(String pocPath) {
         File dir = new File(pocPath);
         String[] children = dir.list();
-        Queue<String> files = new LinkedBlockingQueue<>();
+        Queue<String> files = new LinkedList<>();
         for (String file : children) {
             files.offer(pocPath + "/" + file);
         }
