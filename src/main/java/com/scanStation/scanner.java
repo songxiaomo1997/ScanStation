@@ -8,10 +8,6 @@ import com.scanStation.commonOkHttp.*;
 import com.scanStation.tools.Generatepayload.payload;
 import com.scanStation.tools.*;
 import lombok.extern.log4j.Log4j2;
-import org.python.core.PyDictionary;
-import org.python.core.*;
-import org.python.core.PyFunction;
-import org.python.util.PythonInterpreter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.*;
@@ -47,19 +43,6 @@ public class scanner {
         this.headerConfig = headerConfig;
     }
 
-
-    public resultBean pyscan() {
-        resultBean result = new resultBean();
-        PythonInterpreter interpreter = new PythonInterpreter();
-        interpreter.execfile(pyfile);
-        PyFunction pyFunction = interpreter.get("run", PyFunction.class);
-        PyDictionary pyargs = new PyDictionary();
-        pyargs.put("url", "1.1.1.1"); //传入参数标准 ip port url cookie,全局参数,全局请求头
-        PyObject pyObject = pyFunction.__call__(pyargs);
-        String json = String.valueOf(pyObject);
-        //对返回数据进行处理判断如果存在则封装一个resultBean返回
-        return result;
-    }
 
     public resultBean scan() {
         log.info("------------------------------------检测开始------------------------------------");

@@ -47,6 +47,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.monkeywie</groupId>
+            <artifactId>proxyee</artifactId>
+            <version>1.4.5</version>
+        </dependency>
+        <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.25</version>
@@ -101,10 +106,10 @@
             <artifactId>jcommander</artifactId>
             <version>1.81</version>
         </dependency>
-        <dependency>
-            <groupId>org.python</groupId>
-            <artifactId>jython-standalone</artifactId>
-            <version>2.7.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.python</groupId>-->
+<!--            <artifactId>jython-standalone</artifactId>-->
+<!--            <version>2.7.0</version>-->
+<!--        </dependency>-->
     </dependencies>
 </project>
