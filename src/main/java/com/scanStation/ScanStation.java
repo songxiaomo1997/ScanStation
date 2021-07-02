@@ -85,58 +85,8 @@ public class ScanStation {
             log.info(this.url + "开始检测------------------------------------------------------------------------");
             ActiveScan(re, this.url);
             log.info(this.url + "检测结束------------------------------------------------------------------------");
-        } else if (proxyProt!=null && Integer.parseInt(proxyProt)<= 65535 && Integer.parseInt(proxyProt) > 0){
-            //被动扫描
-            LinkedBlockingQueue<vulBean> scanQueue = new LinkedBlockingQueue<vulBean>();
-            new Thread(()->{
-                HttpProxyServerConfig config = new HttpProxyServerConfig();
-                config.setHandleSsl(true);
-                new HttpProxyServer()
-                        .serverConfig(config)
-                        .proxyInterceptInitializer(new HttpProxyInterceptInitializer() {
-                            @Override
-                            public void init(HttpProxyInterceptPipeline pipeline) {
-                                pipeline.addLast(new CertDownIntercept());
-                                pipeline.addLast(new FullRequestIntercept() {
-                                    @Override
-                                    public boolean match(HttpRequest httpRequest, HttpProxyInterceptPipeline pipeline) {
-                                        //如果是json报文
-                                        return true;
-                                    }
-                                });
-                                pipeline.addLast(new FullResponseIntercept() {
-
-                                    @Override
-                                    public boolean match(HttpRequest httpRequest, HttpResponse httpResponse, HttpProxyInterceptPipeline pipeline) {
-                                        System.out.println("2131231");
-                                        FullHttpRequest fullHttpRequest = (FullHttpRequest) httpRequest;
-                                        String content = fullHttpRequest.content().toString(Charset.defaultCharset());
-                                        System.out.println(content+"---------");
-                                        return content.matches("user");
-                                    }
-
-                                    @Override
-                                    public void handleResponse(HttpRequest httpRequest, FullHttpResponse httpResponse, HttpProxyInterceptPipeline pipeline) {
-                                        //打印原始响应信息
-                                        System.out.println(httpResponse.toString());
-                                        System.out.println(httpResponse.content().toString(Charset.defaultCharset()));
-                                        //修改响应头和响应体
-                                        httpResponse.headers().set("handel", "edit head");
-                    /*int index = ByteUtil.findText(httpResponse.content(), "<head>");
-                    ByteUtil.insertText(httpResponse.content(), index, "<script>alert(1)</script>");*/
-                                        httpResponse.content().writeBytes("<script>alert('hello proxyee')</script>".getBytes());
-                                    }
-                                });
-
-                            }
-                        })
-                        .start(Integer.parseInt(this.proxyProt));
-            }).start();
-
-            new Thread(()->{
-                //扫描
-            }).start();
         }
+
         if (re.size() > 0) {
             for (resultBean r : re) {
                 System.out.println(r.toString() + "\r\n--------------------------------------------\r\n");
