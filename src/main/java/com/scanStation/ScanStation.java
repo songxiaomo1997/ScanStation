@@ -86,7 +86,7 @@ public class ScanStation {
             ActiveScan(re, this.url);
             log.info(this.url + "检测结束------------------------------------------------------------------------");
         } else if (proxyProt!=null && Integer.parseInt(proxyProt)<= 65535 && Integer.parseInt(proxyProt) > 0){
-            //主动扫描
+            //被动扫描
             LinkedBlockingQueue<vulBean> scanQueue = new LinkedBlockingQueue<vulBean>();
             new Thread(()->{
                 HttpProxyServerConfig config = new HttpProxyServerConfig();

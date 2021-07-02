@@ -34,21 +34,21 @@ public class ruleBean {
                 '}';
     }
 
-    private String url;
-    private String method;
-    private String path;
-    private String originalParam;
-    private String vulParam;
-    private List<Map<String, String>> payloads;
-    private String expressions;
-    private int payloadlength;
-    private String oob;
-    private String oobflag;
-    private String globalParam;
-    private String cookie;
-    private Map<String, String> header;
-    private boolean headerscan;
-    private String type;
+    private String url; //扫描目标url 如 http://127.0.0.1
+    private String method; //请求方法 POST GET
+    private String path; //扫描路径 /api/getall
+    private String originalParam; //原始参数
+    private String vulParam; //漏洞参数需要扫描的参数
+    private List<Map<String, String>> payloads; //payloads包含一个payload和一个表达式
+    private String expressions; //总表达式
+    private int payloadlength; //有几个payload
+    private String oob; //带外地址
+    private String oobflag; //带外的flag
+    private String globalParam; //全局参数
+    private String cookie; //cookie
+    private Map<String, String> header; //本次扫描请求头
+    private boolean headerscan; //是否对请求头进行扫描
+    private String type; //请求类型 json 等
 
     public String getGlobalParam() {
         return globalParam;
