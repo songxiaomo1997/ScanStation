@@ -73,7 +73,7 @@ public class ScanStation {
 
         if (target != null && !target.equals("")) {
             ArrayList<String> targets = getTargets(this.target);
-            System.out.println(targets);
+            log.info(targets);
             if (targets != null) {
                 for (String t : targets) {
                     log.info(t + "开始检测------------------------------------------------------------------------");
@@ -87,7 +87,10 @@ public class ScanStation {
             log.info(this.url + "检测结束------------------------------------------------------------------------");
         }
 
+
         if (re.size() > 0) {
+            log.info("find vul:"+re.size());
+            System.out.println("\r\nvulFind--------------------------------------------"+re.size());
             for (resultBean r : re) {
                 System.out.println(r.toString() + "\r\n--------------------------------------------\r\n");
             }

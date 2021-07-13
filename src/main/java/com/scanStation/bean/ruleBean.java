@@ -12,7 +12,7 @@ public class ruleBean {
      * path
      * originalParam
      * vulParam
-     * */
+     */
     @Override
     public String toString() {
         return "ruleBean{" +
@@ -117,6 +117,9 @@ public class ruleBean {
     }
 
     public String getExpressions() {
+        if(expressions==null || expressions.equals("")){
+            expressions="true";
+        }
         return expressions;
     }
 
@@ -126,9 +129,11 @@ public class ruleBean {
 
     public Map<String, Object> getParams() {
         Map<String, Object> params = new HashMap<>();
-        for (String param : originalParam.split("&")) {
-            String[] var = param.split("=");
-            params.put(var[0], var.length >= 2 ? var[1] : "");
+        if (originalParam != null && !originalParam.equals("")) {
+            for (String param : originalParam.split("&")) {
+                String[] var = param.split("=");
+                params.put(var[0], var.length >= 2 ? var[1] : "");
+            }
         }
         return params;
     }
@@ -166,6 +171,9 @@ public class ruleBean {
     }
 
     public String getVulParam() {
+        if (vulParam == null) {
+            vulParam = "";
+        }
         return vulParam;
     }
 
