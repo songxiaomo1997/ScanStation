@@ -63,6 +63,7 @@ public class ScanStation {
             JCommander.newBuilder().addObject(scanStation).build().parse(args);
         } catch (com.beust.jcommander.ParameterException e) {
             log.error("输入错误");
+            System.out.printf("-u|--url 目标地址\r\n--target 多目标txt文件\r\n-c|--cookie cookie值\r\n-p POC路径\r\n-gP|--globalParam 全局参\r\n-debug debug模式\r\n-hC|--headerConfig 请求头参数\r\n-t|--threads 线程数");
             return;
         }
         scanStation.run();
