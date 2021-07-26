@@ -1,4 +1,4 @@
-package com.scanStation.tools.Generatepayload;
+package com.ScanStation.Tools.Generatepayload;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

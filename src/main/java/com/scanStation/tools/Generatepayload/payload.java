@@ -1,53 +1,174 @@
-package com.scanStation.tools.Generatepayload;
+package com.ScanStation.Tools.Generatepayload;
 
-import com.scanStation.bean.ruleBean;
-import com.scanStation.bean.scannerBean;
+import com.ScanStation.Bean.HttpBean;
+import com.ScanStation.Bean.RuleBean;
+import com.ScanStation.Bean.ScanBean;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 @Log4j2
-public class payload {
-    private ruleBean rule;
+public class Payload {
+    private RuleBean rule;
+    private HttpBean http;
 
-    public payload(ruleBean rule) {
+    public ArrayList<ScanBean> insertPyload(HttpBean http, RuleBean rule) {
         this.rule = rule;
-    }
+        this.http = http;
+        if (http.getParamType() != null) {
+            Map<String, String> header = new HashMap<>();
+            header.putAll(http.getHeader());
+            header.putAll(rule.getHeader());
 
-    public ArrayList<scannerBean> Generatepayload() {
-        ArrayList<scannerBean> scanner = new ArrayList<>();
-        payloadsget(scanner);
-        getheaderPayload(scanner);
+            rule.setOriginalParam(http.getParam());
+            rule.setVulParam(http.getParam());
+            rule.setHeader(header);
+            rule.setMethod(http.getMethod());
+            rule.setPath(http.getPath());
+            rule.setType(http.getParamType());
+        }
+
+        ArrayList<ScanBean> scanner = new ArrayList<>();
+        payloadsGetActive(scanner);
+        getHeaderPayloadActive(scanner);
         return scanner;
     }
-    private ArrayList<scannerBean> payloadsget(ArrayList<scannerBean> scanner) {
 
+    public ScanBean getnormalRequest(HttpBean http, RuleBean rule) {
+        ScanBean scanBean = new ScanBean();
+        Map<String, Object> params = new HashMap<>();
+        Map<String, String> header = new HashMap<>();
+        if (http.getParamType() == null) {
+            //主动模式
+            //url path method type param header
+            //从rule获取参数
+            params = rule.getParams();
+            Map<String, Object> tmpMap = new HashMap<>();
+            http.getParams().forEach(tmpMap::put);
+            params.putAll(tmpMap);
+
+            ////从rule获取请求头
+            header = rule.getHeader();
+            header.putAll(http.getHeader());
+
+            scanBean.setUrl(http.getUrl() + rule.getPath());
+            scanBean.setType(rule.getType());
+            scanBean.setMethod(rule.getMethod());
+        } else {
+            //被动模式
+
+            params = http.getParams();
+            header = http.getHeader();
+
+            scanBean.setUrl(http.getUrl() + http.getPath());
+            scanBean.setType(http.getParamType());
+            scanBean.setMethod(http.getMethod());
+        }
+
+
+        scanBean.setParam(params);
+        scanBean.setHeader(header);
+
+        return scanBean;
+    }
+
+    private ArrayList<ScanBean> payloadsGet(String param, HttpBean http) {
+        ArrayList<ScanBean> scanner = new ArrayList<>();
+        int index = 0;
+        for (String scanParam : param.split("&")) {
+            for (Map<String, String> payloadAndexpression : rule.getPayloads()) {
+
+
+                //漏洞参数
+                Map<String, Object> params = new HashMap<>();
+
+                //参数添加
+                Map<String, Object> tmpMap = new HashMap<>();
+                http.getParams().forEach(tmpMap::put);
+                params.putAll(tmpMap);
+
+                //添加payload生成map
+                String payload = payloadAndexpression.get("payload");
+                if ("Form".equalsIgnoreCase(rule.getType()) || "Multi".equalsIgnoreCase(rule.getType())) {
+                    params = rule.getParams();
+                    String[] var = scanParam.split("=");
+                    params.put(var[0], var.length > 1 ? var[1] + payload : payload); //如果有参数直接在参数后加入没有则直接加入
+
+                } else if ("Json".equalsIgnoreCase(rule.getType())) {
+                    replaceJson replaceJson = new replaceJson();
+                    params = replaceJson.replace(rule.getOriginalParam(), scanParam, payload);
+                }
+
+
+                //header头添加
+                Map<String, String> header = new HashMap<>();
+                header.putAll(http.getHeader());
+                header.putAll(rule.getHeader());
+
+                //ScanBean生成
+                ScanBean scb = new ScanBean();
+                scb.setUrl(http.getUrl() + rule.getPath());
+                scb.setName("payload" + index);
+                scb.setMethod(rule.getMethod());
+                scb.setHeader(header);
+                scb.setParam(params);
+                scb.setType(http.getParamType() == null ? rule.getType() : http.getParamType());
+                scb.setExpression(payloadAndexpression.get("expression"));
+                scanner.add(scb);
+                index++;
+            }
+        }
+
+        return scanner;
+    }
+
+    private ArrayList<ScanBean> payloadsGetActive(ArrayList<ScanBean> scanner) {
         int i = scanner.size();
-        for (String vul : rule.getVulParam().split("&")) {
+        for (String scanParam : rule.getVulParam().split("&")) {
             for (Map<String, String> payload : rule.getPayloads()) {
                 Map<String, Object> params = new HashMap<>();
+
+                //参数添加
+                Map<String, Object> tmpMap = new HashMap<>();
+                http.getParams().forEach(tmpMap::put);
+                params.putAll(tmpMap);
+
+                //添加payload生成map
                 String tmp = payload.get("payload");
+                if ("Form".equalsIgnoreCase(rule.getType()) || "Multi".equalsIgnoreCase(rule.getType())) {
+                    params = rule.getParams();
+                    String[] var = scanParam.split("=");
+                    params.put(var[0], var.length > 1 ? var[1] + tmp : tmp); //如果有参数直接在参数后加入没有则直接加入
+                    log.debug("参数为:"+params);
+                } else if ("Json".equalsIgnoreCase(rule.getType())) {
+                    replaceJson replaceJson = new replaceJson();
+                    params = replaceJson.replace(rule.getOriginalParam(), scanParam, tmp);
+                }
 
-               if ("Form".equals(rule.getType())||"Multi".equals(rule.getType())){
-                   params = rule.getParams();
-                   String[] var = vul.split("=");
-                   params.put(var[0], var.length >= 2 ? var[1] + tmp : tmp); //如果有参数直接在参数后加入没有则直接加入
-               }else if ("Json".equals(rule.getType())){
-                   replaceJson replaceJson = new replaceJson();
-                   params = replaceJson.replace(rule.getOriginalParam(),vul,tmp);
-               }
 
-                //scannerBean生成
-                scannerBean scb = new scannerBean();
-                scb.setUrl(rule.getUrl());
+                //header头添加
+                Map<String, String> header = new HashMap<>();
+                header.putAll(http.getHeader());
+                header.putAll(rule.getHeader());
+
+                String type;
+                if (http.getParamType() == null) {
+                    type = rule.getType();
+                } else {
+                    type = http.getParamType();
+                }
+                //ScanBean生成
+                log.debug("参数为:"+params);
+                ScanBean scb = new ScanBean();
+                scb.setUrl(http.getUrl() + rule.getPath());
                 scb.setName("payload" + i);
-                scb.setParam(params);
-                scb.setExpression(payload.get("expression"));
                 scb.setMethod(rule.getMethod());
-                scb.setType(rule.getType());
+                scb.setHeader(header);
+                scb.setParam(params);
+                scb.setType(type);
+                scb.setExpression(payload.get("expression"));
                 scanner.add(scb);
                 i++;
             }
@@ -56,51 +177,56 @@ public class payload {
         return scanner;
     }
 
-    private ArrayList<scannerBean> getheaderPayload(ArrayList<scannerBean> scanner) {
+    private ArrayList<ScanBean> getHeaderPayloadActive(ArrayList<ScanBean> scanner) {
         if (rule.isHeaderscan()) {
             int i = scanner.size();
+
             for (Map.Entry<String, String> header : rule.getHeader().entrySet()) {
                 for (Map<String, String> payload : rule.getPayloads()) {
-                    scannerBean scb = new scannerBean();
-                    Map<String, String> headers = new HashMap<>();
+
                     Map<String, Object> params = new HashMap<>();
-                    String tmp = payload.get("payload");
-                    //存在带外等替换
-                    headers.put(header.getKey(), tmp);
-                    if(rule.getType().equals("Form")||rule.getType().equals("Multi")) {
+
+                    if (rule.getType().equals("Form") || rule.getType().equals("Multi")) {
                         params = rule.getParams(); //原始参数
-                    }else if (rule.getType().equals("Json")){
+                    } else if (rule.getType().equals("Json")) {
                         replaceJson replaceJson = new replaceJson();
-                        params= replaceJson.replace(rule.getOriginalParam(),"","");
+                        params = replaceJson.replace(rule.getOriginalParam(), "", "");
                     }
+
+                    //参数添加
+                    Map<String, Object> tmpMap = new HashMap<>();
+                    http.getParams().forEach(tmpMap::put);
+                    params.putAll(tmpMap);
+
+                    //header头添加
+                    Map<String, String> headers = new HashMap<>();
+                    headers.putAll(http.getHeader());
+                    String tmp = payload.get("payload");
+                    headers.put(header.getKey(), header.getValue() + tmp);
+
+                    String type;
+                    if (http.getParamType() == null) {
+                        type = rule.getType();
+                    } else {
+                        type = http.getParamType();
+                    }
+
+                    ScanBean scb = new ScanBean();
                     scb.setHeader(headers);
-                    scb.setUrl(rule.getUrl());
+                    scb.setUrl(http.getUrl() + rule.getPath());
                     scb.setName("payload" + i);
                     scb.setParam(params);
                     scb.setExpression(payload.get("expression"));
                     scb.setMethod(rule.getMethod());
-                    scb.setType(rule.getType());
-                    scb.setHeaderscan(true);
+                    scb.setType(type);
+                    scb.setHeaderScan(true);
                     scanner.add(scb);
                     i++;
                 }
             }
-        } else {
-            for (scannerBean scb : scanner) {
-                scb.setHeader(rule.getHeader());
-            }
         }
         return scanner;
     }
-
-
-//    @NotNull
-//    private String replaceSpecialParam(String tmp, String Special, String Param) {
-//        if (tmp.contains(Special)) {
-//            tmp = tmp.replace(Special, Param);//带外地址
-//        }
-//        return tmp;
-//    }
 
 
 }

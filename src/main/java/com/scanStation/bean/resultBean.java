@@ -1,26 +1,38 @@
-package com.scanStation.bean;
+package com.ScanStation.Bean;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
-public class resultBean {
+public class ResultBean  {
+    String ruleName;
+    ArrayList<ScanBean> vulRequest;
+    ScanBean originalRequest;
+    Map<String, Object> detail;
+    String status;
 
-
-    @Override
-    public String toString() {
-        return "resultBean{" +
-                "name='" + name + '\'' +
-                ", detail=" + detail +
-                ", scannerBean=" + scannerinfo +
-                '}';
+    public String getRuleName() {
+        return ruleName;
     }
 
-    public String getName() {
-        return name;
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public ArrayList<ScanBean> getVulRequest() {
+        return vulRequest;
+    }
+
+    public void setVulRequest(ArrayList<ScanBean> vulRequest) {
+        this.vulRequest = vulRequest;
+    }
+
+    public ScanBean getOriginalRequest() {
+        return originalRequest;
+    }
+
+    public void setOriginalRequest(ScanBean originalRequest) {
+        this.originalRequest = originalRequest;
     }
 
     public Map<String, Object> getDetail() {
@@ -31,24 +43,29 @@ public class resultBean {
         this.detail = detail;
     }
 
-    public ArrayList<scannerBean> getScannerinfo() {
-        return scannerinfo;
+    public String getStatus() {
+        return status;
     }
 
-    public void setScannerinfo(ArrayList<scannerBean> scannerinfo) {
-        this.scannerinfo = scannerinfo;
-    }
-    public resultBean(){
-
-    }
-    public resultBean(String name, Map<String, Object> detail, ArrayList<scannerBean> scannerinfo) {
-        this.name = name;
-        this.detail = detail;
-        this.scannerinfo = scannerinfo;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    private String name;
-    private Map<String,Object> detail;
-    private ArrayList<scannerBean> scannerinfo;
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"ruleName\":\"")
+                .append(ruleName).append('\"');
+        sb.append(",\"vulRequest\":")
+                .append(vulRequest);
+        sb.append(",\"originalRequest\":")
+                .append(originalRequest);
+        sb.append(",\"detail\":")
+                .append(detail);
+        sb.append(",\"status\":\"")
+                .append(status).append('\"');
+        sb.append('}');
+        return sb.toString();
+    }
 
 }

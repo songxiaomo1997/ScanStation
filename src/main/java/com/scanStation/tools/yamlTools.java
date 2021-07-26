@@ -1,7 +1,5 @@
-package com.scanStation.tools;
+package com.ScanStation.Tools;
 
-import com.scanStation.bean.ruleBean;
-import com.scanStation.bean.vulBean;
 import lombok.extern.log4j.Log4j2;
 import org.yaml.snakeyaml.Yaml;
 
@@ -11,53 +9,39 @@ import java.io.InputStream;
 import java.util.Map;
 
 @Log4j2
-public class yamlTools {
-    private String filepath;
+public class YamlTools<T> {
+    String filePath;
 
-    public yamlTools() {
+    public YamlTools() {
+        this(null);
     }
 
-    public yamlTools(String filepath) {
-        this.filepath = filepath;
+    public YamlTools(String filePath) {
+        this.filePath = filePath;
     }
 
-    public Map<String, String> load(String filepath) {
+    public T load(java.lang.Class<T> type, String filePath) {
         InputStream inputStream = null;
         try {
-            inputStream = new FileInputStream(filepath);
+            inputStream = new FileInputStream(filePath);
         } catch (FileNotFoundException e) {
-            log.error(this.filepath+"不存在");
+            log.error(filePath + "不存在");
+            System.exit(0);
+        }
+        Yaml yaml = new Yaml();
+        return yaml.loadAs(inputStream, type);
+    }
+
+    public T load(Class type) {
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(this.filePath);
+        } catch (FileNotFoundException e) {
+            log.error(this.filePath + "不存在");
             return null;
         }
         Yaml yaml = new Yaml();
-        Map<String, String> map = yaml.loadAs(inputStream, Map.class);
-        return map;
-    }
-
-    public vulBean load() {
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(this.filepath);
-        } catch (FileNotFoundException e) {
-            log.error(this.filepath+"不存在");
-            return null;
-        }
-        Yaml yaml = new Yaml();
-        return yaml.loadAs(inputStream, vulBean.class);
-    }
-
-    public vulBean vulGet(String file, String url, String globalParam, String cookie) {
-        vulBean vul = new yamlTools(file).load();
-        vul.getRules().setUrl(url);
-        ruleBean rule = vul.getRules();
-        rule.setUrl(url);
-        if (globalParam != null && !globalParam.equals("")) {
-            rule.setGlobalParam(globalParam);
-        }
-        if (cookie != null && !cookie.equals("")) {
-            rule.setCookie(cookie);
-        }
-//        rule.setOob("123123.dns.com");
-        return vul;
+        T t = (T) yaml.loadAs(inputStream, type);
+        return t;
     }
 }

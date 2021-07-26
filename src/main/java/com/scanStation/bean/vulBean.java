@@ -1,12 +1,11 @@
-package com.scanStation.bean;
+package com.ScanStation.Bean;
 
 import java.util.Map;
 
-public class vulBean {
-    private String name;
-    private ruleBean rules;
-    private Map<String,Object> detail;
-
+public class VulBean {
+    String name;
+    RuleBean rules;
+    Map<String,Object> detail;
 
     public String getName() {
         return name;
@@ -16,11 +15,11 @@ public class vulBean {
         this.name = name;
     }
 
-    public ruleBean getRules() {
+    public RuleBean getRules() {
         return rules;
     }
 
-    public void setRules(ruleBean rules) {
+    public void setRules(RuleBean rules) {
         this.rules = rules;
     }
 
@@ -34,10 +33,14 @@ public class vulBean {
 
     @Override
     public String toString() {
-        return "vul:{" +
-                "name='" + name + '\'' +
-                ", rules=" + rules +
-                ", detail=" + detail +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"rules\":")
+                .append(rules);
+        sb.append(",\"detail\":")
+                .append(detail);
+        sb.append('}');
+        return sb.toString();
     }
 }
