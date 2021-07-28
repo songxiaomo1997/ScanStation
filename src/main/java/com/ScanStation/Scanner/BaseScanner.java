@@ -29,7 +29,7 @@ public class BaseScanner extends Thread implements Scanner{
             env.put("normalrequest", payload.getNormalRequest());
             env.put("scaned", scanBean);
             env.putAll(scanBean.getResponse());
-            log.debug(scanBean.getResponse());
+            log.debug(scanBean.getResponse().get("body"));
             log.debug("表达式环境:"+env);
             Boolean result = avitor.execAvitor(scanBean.getExpression(), env);
             scanBean.setResult(result);

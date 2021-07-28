@@ -47,7 +47,7 @@ public class Proxy {
                         pipeline.addLast(new FullRequestIntercept(decomposer) {
                             @Override
                             public void handleRequest(Channel clientChannel, FullHttpRequest httpRequest, HttpProxyInterceptPipeline pipeline) {
-                                log.debug(httpRequest.headers().get(HttpHeaderNames.HOST) + httpRequest.uri());
+//                                log.debug(httpRequest.headers().get(HttpHeaderNames.HOST) + httpRequest.uri());
                                 new Thread(() -> {
                                     if (this.decomposer.isProduce(httpRequest,clientChannel)) {
                                         this.decomposer.ProduceHttp(httpRequest, clientChannel);
