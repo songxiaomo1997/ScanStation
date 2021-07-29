@@ -38,7 +38,8 @@ public class Proxy {
     public void startProxy(int port) {
         HttpProxyServerConfig config = new HttpProxyServerConfig();
         config.setHandleSsl(true);
-        log.info("++++++++++++代理启动++++++++++++");
+        log.info("++++++++++++代理开始启动++++++++++++");
+        log.info("++++++++++++127.0.0.1:"+port+"++++++++++++");
         new HttpProxyServer()
                 .serverConfig(config)
                 .proxyInterceptInitializer(new HttpProxyInterceptInitializer() {

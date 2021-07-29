@@ -28,7 +28,7 @@ public class ActiveProducer implements Producer<PayloadBean> {
         for (VulBean vul : this.vulBeanArrayList) {
 
             PayloadBean payloadBean = new PayloadBean();
-            log.info("开始构造rule:" + vul.toString());
+            log.debug("开始构造rule:" + vul.toString());
 
             payloadBean.setRuleName(vul.getName());
             payloadBean.setScanList(payload.insertPyload(http, vul.getRules()));
@@ -37,7 +37,8 @@ public class ActiveProducer implements Producer<PayloadBean> {
             payloadBean.setExpressions(vul.getRules().getExpressions());
 
             divider.addQueue(payloadBean);
-            log.info("构造器构造paylaodbean完成:" + payloadBean.toString());
+            log.debug("构造器构造paylaodbean完成:" + payloadBean.toString());
+            log.info("构造器构造rule"+payloadBean.getRuleName()+"完成");
         }
     }
 
@@ -53,6 +54,7 @@ public class ActiveProducer implements Producer<PayloadBean> {
         } else {
             File dir = new File(pocPath);
             String[] children = dir.list();
+            assert children != null;
             for (String file : children) {
                 if (file.endsWith(".yaml")) {
                     VulBean vul = yamlTools.load(VulBean.class, pocPath + "/" + file);

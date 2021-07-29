@@ -40,6 +40,10 @@ public class HttpDecomposerImp implements Decomposer<HttpBean> {
         Map<String, String> header = getHeader(request);
         String paramType = getParamType(request);
 
+        if (getParam(request).equals("")){
+            log.info("无参数或者为静态文件不扫描 " + method + " " + url + path + " " + getParam(request));
+            return null;
+        }
         if (paramType.equals("not support")) {
             log.error("not support " + method + " " + url + path + " " + getParam(request));
             return null;
@@ -66,13 +70,14 @@ public class HttpDecomposerImp implements Decomposer<HttpBean> {
 
     @Override
     /**
-     * 用于判断是否需要构造HttpBean,暂时都为True
+     * 用于判断是否需要构造HttpBean
+     * 1.在范围内的扫描
+     * 2.去重 记录 后续添加
      * **/
     public Boolean isProduce(FullHttpRequest request, Channel clientChannel) {
         for (String target : targets) {
-            if (target.equalsIgnoreCase("*")) {
-                return true;
-            } else if (getUrl(request, clientChannel).contains(target)) {
+            if (target.equalsIgnoreCase("*") || getUrl(request, clientChannel).contains(target)) {
+                log.info("url:"+request.method().name() + " " + getUrl(request, clientChannel)+" "+getParam(request));
                 return true;
             }
         }

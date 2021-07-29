@@ -9,12 +9,12 @@
 - [x] POST,GET类型扫描
 - [x] json,Multi,form类型请求扫描
 - [x] 时间延迟判断,响应内容判断
+- [x] 支持被动扫描
 #### 后续支持
 - [ ] 请求方式PUT,DELETE等
 - [ ] 支持多语言poc,如python
 - [ ] 请求类型支持xml类型
 - [ ] payload表达式增强,支持payload组，自定payload变量
-- [ ] 支持被动扫描
 - [ ] 支持反连平台带外检测
 - [ ] 支持更多表达式检测结果
 - [ ] 支持grpc扫描
@@ -25,15 +25,72 @@
 java -jar ScanStation -u|--url [目标地址] --pocPath [需要加载的poc路径] -c|--cookie [(可选)全局cookie] -gP|--globalParam[(可选)全局参数] -hC|--headerConfig [(可选)全局请求头配置文件路径] -t 
 ```
 ####参数说明
+主动模式 active
 ```
--u | --url [目标地址] 如htts://127.0.0.1:1234
---target [目标存放文本位置] 从txt文本获取需要扫描的url进行扫描 
--p | --pocPath [需要加载的poc路径] 需要加载的poc的路径,需要在目录下放需要加载规则 如:~/Dowloads/rules
--c|--cookie (可选)全局cookie 设置全局的cookie 将请求中的cookie值复制即可
--gP|--globalParam [(可选)全局参数] 设置全局参数 在请求时会自动带上该参数进行请求
--hC|--headerConfig [(可选)全局请求头配置文件路径] 配置文件为yaml类型格式为: test : 12321321 
--t | --threads [(可选) 线程数默认10个线程] 设置线程数
+-u | --url 目标地址
+--target  多目标
+-c ｜ --cookie cookie值
+-gP | --globalParam 全局参数值
+-hC | --headerConfig 全局请求头配置文件地址
+-t ｜--threads 多线程线程数
+--pocPath poc路径
 ```
+扫描http://www.test.com
+```
+java -jar ScanStation.jar -active -u http://www.test.com --pocPath /Users/ScanStation/
+```
+扫描多个目标
+target.txt
+```
+http://www.test.com
+https://www.test.com
+http://test.test.com
+```
+```
+java -jar ScanStation.jar -active --target target.txt --pocPath /Users/ScanStation/
+```
+扫描http://www.test.com设置cookie和全局参数
+```
+java -jar ScanStation.jar -active -u http://www.test.com -c "sid=123456789" -gP "token=123&csrf_token=321" --pocPath /Users/ScanStation/
+```
+扫描http://www.test.com设置请求头和线程数为20
+headconfig.yaml
+```
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36
+Accept-Language: zh-CN,zh;q=0.9
+ScanStation: ScanStation v1.0
+```
+```
+java -jar ScanStation.jar -active -u http://www.test.com -hC headconfig.yaml -t 20 --pocPath /Users/ScanStation/
+```
+被动模式 passive
+```
+-p｜--Proxy 代理端口地址
+-u | --url 目标url
+--target 目标地址
+-t ｜ --threads
+--pocPath poc路径
+```
+扫描经过代理的所有url并分配20个线程,如需扫描https需要启动后访问127.0.0.1:启动的端口下载证书安装
+```
+java -jar ScanStation.jar -passive -p 4321 --pocPath /Users/ScanStation/ -t 20
+```
+扫描http://test.test.com
+```
+java -jar ScanStation.jar -passive -p 4321 -u "test.test.com" --pocPath /Users/ScanStation/
+```
+
+扫描多个url
+target.yaml
+```
+- http://www.test.com
+- https://www.test.com
+- http://test.test.com
+```
+```
+java -jar ScanStation.jar -passive -p 4321 -target target.yaml --pocPath /Users/ScanStation/
+```
+
 #### 规则测试
 只会加载一个poc用于测试poc路径为文件路径,如poc路径为~/Dowloads/rules/test.yaml则填入即可
 ```

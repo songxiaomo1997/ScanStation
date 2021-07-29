@@ -55,18 +55,18 @@ public class ActiveDivider implements Divider<PayloadBean> {
                 if (payloadBeanLinkedBlockingQueue.size() == 0) {
                     log.info("扫描完成关闭线程");
                     es.shutdown();
-                    log.info("扫描完成关闭线程完成");
+                    log.info("扫描完成关闭线程完成,准备开始获取结果");
                 }
             }
 
             for (Future<ResultBean> future : Futures) {
                 if (future.isDone()) {
                     try {
-                        log.info("开始获取结果");
                         ResultBean resultBean = future.get();
                         Futures.remove(future);
-                        log.info(Futures.size());
+                        log.info("剩余"+Futures.size());
                         if (resultBean.getStatus()!=null){
+                            log.info("开始获取"+resultBean.getRuleName()+"结果");
                             log.info("resultBean:" + resultBean.toString());
                         }
                     } catch (InterruptedException | ExecutionException e) {

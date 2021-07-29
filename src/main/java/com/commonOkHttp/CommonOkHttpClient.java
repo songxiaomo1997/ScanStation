@@ -66,10 +66,12 @@ public final class CommonOkHttpClient {
         }
         Request.Builder reqBuilder = new Request.Builder().get().url(urlBuilder.build());
 
-        if (headerExt.get("Accept-Encoding").contains("gzip")) {
-            headerExt.replace("Accept-Encoding", headerExt.get("Accept-Encoding").replaceAll("gzip", ""));
+        if (headerExt.containsKey("Accept-Encoding")) {
+            if (headerExt.get("Accept-Encoding").contains("gzip")) {
+                headerExt.replace("Accept-Encoding", headerExt.get("Accept-Encoding").replaceAll("gzip", ""));
+            }
         }
-        if (headerExt != null && headerExt.size() > 0) {
+        if (headerExt.size() > 0) {
             headerExt.forEach(reqBuilder::addHeader);
         }
         Request request = reqBuilder.build();
@@ -113,8 +115,10 @@ public final class CommonOkHttpClient {
 
         Request.Builder reqBuilder = new Request.Builder().post(body).url(url);
         //添加请求头
-        if (headerExt.get("Accept-Encoding").contains("gzip")) {
-            headerExt.replace("Accept-Encoding", headerExt.get("Accept-Encoding").replaceAll("gzip", ""));
+        if (headerExt.containsKey("Accept-Encoding")) {
+            if (headerExt.get("Accept-Encoding").contains("gzip")) {
+                headerExt.replace("Accept-Encoding", headerExt.get("Accept-Encoding").replaceAll("gzip", ""));
+            }
         }
         if (headerExt.size() > 0) {
             headerExt.forEach(reqBuilder::addHeader);

@@ -38,7 +38,7 @@ public class ActiveScan {
      **/
     public void scan() {
 
-
+        log.info("----------------主动扫描开始----------------");
         LinkedBlockingQueue<PayloadBean> payloadBeanLinkedBlockingQueue = new LinkedBlockingQueue<>();
 
         Divider<PayloadBean> divider = new ActiveDivider(payloadBeanLinkedBlockingQueue, cmd.getThreads());
@@ -54,7 +54,7 @@ public class ActiveScan {
             }
         } else {
             HttpBean http = getHttp(cmd.getUrl());
-            log.info("HttpBean构造完成:" + http.toString());
+            log.debug("HttpBean构造完成:" + http.toString());
             producer.ProduceScan(http);
         }
 
@@ -119,7 +119,7 @@ public class ActiveScan {
                 }
             }
         } catch (FileNotFoundException e) {
-            log.debug(target + "文件不存在");
+            log.error(target + "文件不存在");
             return targets;
         } catch (IOException e) {
             e.printStackTrace();

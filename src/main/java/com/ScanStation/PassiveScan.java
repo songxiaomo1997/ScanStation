@@ -32,7 +32,7 @@ public class PassiveScan {
      * 5.返回扫描结果
      **/
     public void scan() {
-
+        log.info("----------------被动扫描开始----------------");
         //启动代理构造httpbean队列
         LinkedBlockingQueue<HttpBean> httpQueue = new LinkedBlockingQueue<HttpBean>();
         ArrayList<String> targets = new ArrayList<>();
@@ -66,8 +66,8 @@ public class PassiveScan {
                 if (!decomposer.getQueue().isEmpty()) {
                     try {
                         HttpBean http = httpQueue.take();
-                        log.info("HttpBean构造完成:" + http.toString());
-                        log.info("剩余httpbean共:" + httpQueue.size());
+                        log.debug("HttpBean构造完成:" + http.toString());
+                        log.debug("剩余httpbean共:" + httpQueue.size());
                         producer.ProduceScan(http);
                         divider.scan();
                     } catch (InterruptedException e) {
@@ -78,7 +78,7 @@ public class PassiveScan {
             }
         }).start();
 
-        log.info("over");
+        log.info("代理启动完成,POC加载完成");
     }
 
     //用于获取httpbean
