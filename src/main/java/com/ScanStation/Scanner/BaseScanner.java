@@ -15,22 +15,23 @@ import java.util.concurrent.Callable;
 
 @Log4j2
 public class BaseScanner extends Thread implements Scanner{
-    PayloadBean payload;
-
     @Override
     public Callable<ResultBean> scan(PayloadBean payload) {
         avitorTools avitor = new avitorTools();
         for (ScanBean scanBean : payload.getScanList()) {
             CommonOkHttpClient httpClientNotSafe = new CommonOkHttpClientBuilder().unSafe(true).build();
+
+            log.debug("扫描信息:"+scanBean);
             Map<String, String> response = httpClientNotSafe.request(scanBean);
             scanBean.setResponse(response);
+
+            log.debug("响应:"+response);
 
             Map<String, Object> env = new HashMap<>();
             env.put("normalrequest", payload.getNormalRequest());
             env.put("scaned", scanBean);
             env.putAll(scanBean.getResponse());
-            log.debug(scanBean.getResponse().get("body"));
-            log.debug("表达式环境:"+env);
+//            log.debug("表达式环境:"+env);
             Boolean result = avitor.execAvitor(scanBean.getExpression(), env);
             scanBean.setResult(result);
         }

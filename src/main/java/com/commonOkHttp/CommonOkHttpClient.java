@@ -2,7 +2,6 @@ package com.commonOkHttp;
 
 import com.ScanStation.Bean.ScanBean;
 import com.google.gson.Gson;
-import com.commonOkHttp.callback.*;
 import com.commonOkHttp.utils.HttpsUtils;
 import com.google.gson.GsonBuilder;
 import lombok.extern.log4j.Log4j2;
@@ -12,11 +11,14 @@ import okhttp3.internal.Util;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Log4j2
@@ -31,6 +33,7 @@ public final class CommonOkHttpClient {
         builder.writeTimeout(writeTimeout, TimeUnit.MILLISECONDS);
         builder.connectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
         builder.eventListener(requestTimeEventListener);
+//        builder.proxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress("127.0.0.1",8080)));
 
         // sslParams 如果为null只是不设置证书相关的参数,而使用默认的CA认证方式
         if (sslParams != null) {
@@ -63,6 +66,9 @@ public final class CommonOkHttpClient {
         }
         Request.Builder reqBuilder = new Request.Builder().get().url(urlBuilder.build());
 
+        if (headerExt.get("Accept-Encoding").contains("gzip")) {
+            headerExt.replace("Accept-Encoding", headerExt.get("Accept-Encoding").replaceAll("gzip", ""));
+        }
         if (headerExt != null && headerExt.size() > 0) {
             headerExt.forEach(reqBuilder::addHeader);
         }
@@ -90,6 +96,10 @@ public final class CommonOkHttpClient {
 
         MultipartBody uploadBody = builder.build();
         Request.Builder reqBuilder = new Request.Builder().post(uploadBody).url(url);
+
+        if (headerExt.get("Accept-Encoding").contains("gzip")) {
+            headerExt.replace("Accept-Encoding", headerExt.get("Accept-Encoding").replaceAll("gzip", ""));
+        }
         if (headerExt != null && headerExt.size() > 0) {
             headerExt.forEach(reqBuilder::addHeader);
         }
@@ -103,7 +113,10 @@ public final class CommonOkHttpClient {
 
         Request.Builder reqBuilder = new Request.Builder().post(body).url(url);
         //添加请求头
-        if (headerExt != null && headerExt.size() > 0) {
+        if (headerExt.get("Accept-Encoding").contains("gzip")) {
+            headerExt.replace("Accept-Encoding", headerExt.get("Accept-Encoding").replaceAll("gzip", ""));
+        }
+        if (headerExt.size() > 0) {
             headerExt.forEach(reqBuilder::addHeader);
         }
 
@@ -153,7 +166,7 @@ public final class CommonOkHttpClient {
             Map<String, String> responseMap = new HashMap<>();
             responseMap.put("status", String.valueOf(response.code()));
             responseMap.put("header", response.headers().toString());
-            responseMap.put("body", response.body().string());
+            responseMap.put("body", Objects.requireNonNull(response.body()).string());
             responseMap.put("time", String.valueOf(requestTimeEventListener.getRequestTime()));
             return responseMap;
 
@@ -191,10 +204,11 @@ public final class CommonOkHttpClient {
         param.put("id", 123);
 
         Map<String, String> header = new HashMap<>();
-        header.put("Content-Type", "123123231");
-
+        header.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36");
+        header.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+        header.put("Accept-Encoding", "gzip, deflate");
         ScanBean scanBean = new ScanBean();
-        scanBean.setUrl("http://train24v.ctf.bjzt.qianxin-inc.cn:18084/vul/sqli/sqli_str.php");
+        scanBean.setUrl("http://120.26.84.240:8008/Less-1/");
         scanBean.setParam(param);
         scanBean.setHeader(header);
         scanBean.setType("From");

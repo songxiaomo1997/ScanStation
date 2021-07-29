@@ -31,11 +31,11 @@ public class Proxy {
      **/
     public Decomposer decomposer;
 
-    Proxy(Decomposer decomposer) {
+    public Proxy(Decomposer decomposer) {
         this.decomposer = decomposer;
     }
 
-    void startProxy(int port) {
+    public void startProxy(int port) {
         HttpProxyServerConfig config = new HttpProxyServerConfig();
         config.setHandleSsl(true);
         log.info("++++++++++++代理启动++++++++++++");
