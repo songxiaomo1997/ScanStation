@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+@Log4j2
 public class HttpProxyServerHandler extends ChannelInboundHandlerAdapter {
 
     private ChannelFuture cf;
@@ -69,6 +70,8 @@ public class HttpProxyServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) msg;
+            log.debug("handleRequest:"+request.headers().get(HttpHeaderNames.HOST) + request.uri());
+
             // 第一次建立连接取host和端口号和处理代理握手
             if (status == 0) {
                 RequestProto requestProto = ProtoUtil.getRequestProto(request);

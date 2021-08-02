@@ -184,7 +184,7 @@ public class HttpProxyServer {
                     @Override
                     protected void initChannel(Channel ch) throws Exception {
                         ch.pipeline().addLast("httpCodec", new HttpServerCodec());
-                        ch.pipeline().addLast("aggregator", new HttpObjectAggregator(512 * 1024));
+//                        ch.pipeline().addLast("aggregator", new HttpObjectAggregator(512 * 1024));
                         ch.pipeline().addLast("serverHandle",
                                 new HttpProxyServerHandler(serverConfig, proxyInterceptInitializer, tunnelIntercept, proxyConfig,
                                         httpProxyExceptionHandle));
