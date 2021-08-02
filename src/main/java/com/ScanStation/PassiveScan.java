@@ -21,6 +21,7 @@ public class PassiveScan {
     CommandBean cmd;
 
     PassiveScan(CommandBean cmd) {
+        log.info(cmd.toString());
         this.cmd = cmd;
     }
 
@@ -36,7 +37,7 @@ public class PassiveScan {
         //启动代理构造httpbean队列
         LinkedBlockingQueue<HttpBean> httpQueue = new LinkedBlockingQueue<HttpBean>();
         ArrayList<String> targets = new ArrayList<>();
-        if (cmd.getTarget() != null && !cmd.getTarget().equals("")) {
+        if (cmd.getTarget() != null&&!cmd.getTarget().equals("")) {
             File file = new File(cmd.getTarget());
             if (file.exists()) {
                 YamlTools<ArrayList<String>> yamlTools = new YamlTools<>(cmd.getTarget());
@@ -44,10 +45,10 @@ public class PassiveScan {
             } else {
                 targets.addAll(Arrays.asList(cmd.getTarget().split(",")));
             }
-        } else {
+        }else {
             targets.add("*");
         }
-        HttpDecomposerImp decomposer = new HttpDecomposerImp(httpQueue, targets);
+        HttpDecomposerImp decomposer = new HttpDecomposerImp(httpQueue,targets);
 
         int prot = cmd.getProxyProt();
         new Thread(() -> {

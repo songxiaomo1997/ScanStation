@@ -147,8 +147,8 @@ public class CommandBean {
                 .append(headerConfig).append('\"');
         sb.append(",\"threads\":")
                 .append(threads);
-        sb.append(",\"proxyProt\":\"")
-                .append(proxyProt).append('\"');
+        sb.append(",\"proxyProt\":")
+                .append(proxyProt);
         sb.append('}');
         return sb.toString();
     }

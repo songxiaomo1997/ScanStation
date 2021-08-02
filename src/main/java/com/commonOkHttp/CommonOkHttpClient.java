@@ -11,8 +11,6 @@ import okhttp3.internal.Util;
 import org.jetbrains.annotations.TestOnly;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
