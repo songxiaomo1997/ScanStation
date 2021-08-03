@@ -21,6 +21,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <!-- 自动移除未使用到的jar包 -->
@@ -31,6 +32,7 @@
                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <mainClass>com.ScanStation.ScanStation</mainClass>
                         </transformer>
+
                     </transformers>
                     <filters>
                         <filter>
@@ -64,12 +66,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.github.edwgiz</groupId>
-            <artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
-            <version>2.14.1</version>
-        </dependency>
-
 
         <dependency>
             <groupId>org.yaml</groupId>
@@ -106,15 +102,24 @@
             <artifactId>commons-lang</artifactId>
             <version>2.5</version>
         </dependency>
+
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.14.1</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.22</version>
+            <version>1.18.12</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
         </dependency>
         <dependency>
             <groupId>com.github.monkeywie</groupId>
@@ -157,5 +162,4 @@
             <version>${netty.version}</version>
         </dependency>
     </dependencies>
-
 </project>

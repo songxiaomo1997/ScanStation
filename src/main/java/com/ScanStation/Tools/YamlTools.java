@@ -1,14 +1,13 @@
 package com.ScanStation.Tools;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Map;
 
-@Log4j2
+@Slf4j
 public class YamlTools<T> {
     String filePath;
 

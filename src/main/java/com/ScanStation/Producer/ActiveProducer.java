@@ -6,12 +6,12 @@ import com.ScanStation.Bean.VulBean;
 import com.ScanStation.Divider.Divider;
 import com.ScanStation.Tools.Generatepayload.Payload;
 import com.ScanStation.Tools.YamlTools;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.ArrayList;
 
-@Log4j2
+@Slf4j
 public class ActiveProducer implements Producer<PayloadBean> {
     Divider<PayloadBean> divider;
     ArrayList<VulBean> vulBeanArrayList;

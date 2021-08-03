@@ -2,9 +2,9 @@ package com.ScanStation;
 
 import com.ScanStation.Bean.CommandBean;
 import com.beust.jcommander.JCommander;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
-@Log4j2
+@Slf4j
 public class ScanStation {
     public static void main(String[] args) {
         CommandBean cmd = new CommandBean();

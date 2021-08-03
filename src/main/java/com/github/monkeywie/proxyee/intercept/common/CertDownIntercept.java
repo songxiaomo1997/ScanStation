@@ -81,7 +81,7 @@ public class CertDownIntercept extends HttpProxyIntercept {
             } else {  //跳转下载页面
                 HttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
                         HttpResponseStatus.OK);
-                String html = "<html><body><div style=\"margin-top:100px;text-align:center;\"><a href=\"ca.crt\">ProxyeeRoot ca.crt</a></div></body></html>";
+                String html = "<html><body><div style=\"margin-top:100px;text-align:center;\"><a href=\"ca.crt\">ScanStation ca.crt</a></div></body></html>";
                 httpResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html;charset=utf-8");
                 httpResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, html.getBytes().length);
                 httpResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);

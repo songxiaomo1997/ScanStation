@@ -4,7 +4,7 @@ import com.ScanStation.Bean.ScanBean;
 import com.google.gson.Gson;
 import com.commonOkHttp.utils.HttpsUtils;
 import com.google.gson.GsonBuilder;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import okhttp3.FormBody.Builder;
 import okhttp3.internal.Util;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-@Log4j2
+@Slf4j
 public final class CommonOkHttpClient {
 
     private OkHttpClient okHttpClient;
@@ -218,7 +218,7 @@ public final class CommonOkHttpClient {
 
         CommonOkHttpClient httpClientNotSafe = new CommonOkHttpClientBuilder().unSafe(true).build();
         Map<String, String> response = httpClientNotSafe.request(scanBean);
-        log.info(response);
+        log.info(String.valueOf(response));
     }
 }
 

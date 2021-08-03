@@ -6,14 +6,14 @@ import com.ScanStation.Bean.ScanBean;
 import com.ScanStation.Tools.Avitor.avitorTools;
 import com.commonOkHttp.CommonOkHttpClient;
 import com.commonOkHttp.CommonOkHttpClientBuilder;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-@Log4j2
+@Slf4j
 public class BaseScanner extends Thread implements Scanner{
     @Override
     public Callable<ResultBean> scan(PayloadBean payload) {
@@ -33,7 +33,7 @@ public class BaseScanner extends Thread implements Scanner{
             env.putAll(scanBean.getResponse());
             Boolean result = avitor.execAvitor(scanBean.getExpression(), env);
             scanBean.setResult(result);
-            log.debug(scanBean);
+            log.debug(String.valueOf(scanBean));
         }
         return new ResultBeanCallable(getResult(payload));
     }

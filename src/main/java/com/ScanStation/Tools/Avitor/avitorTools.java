@@ -7,11 +7,11 @@ import com.googlecode.aviator.runtime.type.AviatorBoolean;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.commonOkHttp.CommonOkHttpClient;
 import com.commonOkHttp.CommonOkHttpClientBuilder;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
-@Log4j2
+@Slf4j
 public class avitorTools {
 
     public avitorTools() {

@@ -5,7 +5,7 @@ import com.google.gson.*;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.TestOnly;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Pattern;
 
-@Log4j2
+@Slf4j
 public class HttpDecomposerImp implements Decomposer<HttpBean> {
     LinkedBlockingQueue<HttpBean> httpQueue;
     ArrayList<String> targets;
