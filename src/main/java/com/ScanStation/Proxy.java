@@ -73,6 +73,11 @@ public class Proxy {
         AtomicInteger i = new AtomicInteger();
         new Thread(() -> {
             while (true) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 if (!decomposer.getQueue().isEmpty()) {
                     log.error(decomposer.getQueue().size() + "---------------------------------------------" + !decomposer.getQueue().isEmpty());
                     try {

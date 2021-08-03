@@ -32,7 +32,7 @@ public class ActiveDivider implements Divider<PayloadBean> {
 
     @Override
     public void scan() {
-        log.info("扫描开始共有:" + payloadBeanLinkedBlockingQueue.size() + "个payloadbean");
+        log.debug("扫描开始共有:" + payloadBeanLinkedBlockingQueue.size() + "个payloadbean");
 
         LinkedBlockingQueue<Future<ResultBean>> Futures = new LinkedBlockingQueue<>();
         ExecutorService es = Executors.newFixedThreadPool(threads);
@@ -45,7 +45,7 @@ public class ActiveDivider implements Divider<PayloadBean> {
                 try {
                     payloadBean = payloadBeanLinkedBlockingQueue.take();
                     log.debug(payloadBean.toString());
-                    log.info(payloadBean.getRuleName() + "开始扫描" + payloadBeanLinkedBlockingQueue.size());
+                    log.debug(payloadBean.getRuleName() + "开始扫描" + payloadBeanLinkedBlockingQueue.size());
                     Futures.put(es.submit(scanner.scan(payloadBean)));
                 } catch (InterruptedException e) {
                     log.error("扫描队列获取失败");
@@ -53,9 +53,9 @@ public class ActiveDivider implements Divider<PayloadBean> {
                 }
 
                 if (payloadBeanLinkedBlockingQueue.size() == 0) {
-                    log.info("扫描完成关闭线程");
+                    log.debug("扫描完成关闭线程");
                     es.shutdown();
-                    log.info("扫描完成关闭线程完成,准备开始获取结果");
+                    log.debug("扫描完成关闭线程完成,准备开始获取结果");
                 }
             }
 
@@ -64,7 +64,7 @@ public class ActiveDivider implements Divider<PayloadBean> {
                     try {
                         ResultBean resultBean = future.get();
                         Futures.remove(future);
-                        log.info("剩余"+Futures.size());
+                        log.debug("剩余"+Futures.size());
                         if (resultBean.getStatus()!=null){
                             log.info("开始获取"+resultBean.getRuleName()+"结果");
                             log.info("resultBean:" + resultBean.toString());
@@ -76,7 +76,7 @@ public class ActiveDivider implements Divider<PayloadBean> {
             }
             if (es.isTerminated()) {
                 closeable = true;
-                log.info("关闭");
+                log.debug("关闭");
             }
         }
         //

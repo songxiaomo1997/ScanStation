@@ -24,8 +24,8 @@
                 <version>3.2.4</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <!-- 自动移除未使用到的jar包 -->
-                    <minimizeJar>true</minimizeJar>
+                    <!-- 自动移除未使用到的jar包 打开后log会缺少依赖-->
+<!--                    <minimizeJar>true</minimizeJar>-->
                     <!-- 指定主类 -->
                     <transformers>
                         <transformer
@@ -66,17 +66,19 @@
     </properties>
 
     <dependencies>
-
+        <!--规则加载-->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.25</version>
         </dependency>
+        <!--规则引擎-->
         <dependency>
             <groupId>com.googlecode.aviator</groupId>
             <artifactId>aviator</artifactId>
             <version>2.3.4</version>
         </dependency>
+        <!--扫描发包-->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
@@ -102,40 +104,41 @@
             <artifactId>commons-lang</artifactId>
             <version>2.5</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <!--日志相关-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
         <dependency>
-            <groupId>com.github.monkeywie</groupId>
-            <artifactId>proxyee</artifactId>
-            <version>1.4.5</version>
+            <groupId>org.codehaus.janino</groupId>
+            <artifactId>janino</artifactId>
+            <version>3.1.2</version>
         </dependency>
+        <!--Json解析-->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.7</version>
         </dependency>
+        <!--命令行-->
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
             <version>1.81</version>
         </dependency>
+        <!--代理-->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
@@ -160,6 +163,11 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-handler-proxy</artifactId>
             <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.58</version>
         </dependency>
     </dependencies>
 </project>

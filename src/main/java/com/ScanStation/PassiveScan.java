@@ -4,8 +4,8 @@ import com.ScanStation.Bean.CommandBean;
 import com.ScanStation.Bean.HttpBean;
 import com.ScanStation.Bean.PayloadBean;
 import com.ScanStation.Decomposer.HttpDecomposerImp;
-import com.ScanStation.Divider.ActiveDivider;
 import com.ScanStation.Divider.Divider;
+import com.ScanStation.Divider.PassiveDivider;
 import com.ScanStation.Producer.ActiveProducer;
 import com.ScanStation.Producer.Producer;
 import com.ScanStation.Tools.YamlTools;
@@ -15,13 +15,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class PassiveScan {
     CommandBean cmd;
 
     PassiveScan(CommandBean cmd) {
-        log.info(cmd.toString());
+        log.debug(cmd.toString());
         this.cmd = cmd;
     }
 
@@ -58,19 +59,25 @@ public class PassiveScan {
 
 
         LinkedBlockingQueue<PayloadBean> payloadBeanLinkedBlockingQueue = new LinkedBlockingQueue<>();
-        Divider<PayloadBean> divider = new ActiveDivider(payloadBeanLinkedBlockingQueue, cmd.getThreads());
+        Divider<PayloadBean> divider = new PassiveDivider(payloadBeanLinkedBlockingQueue, cmd.getThreads());
         Producer<PayloadBean> producer = new ActiveProducer(divider);
         producer.getVul(cmd.getPocPath(), cmd.isDebug());
+        divider.scan();
 
         new Thread(() -> {
             while (true) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 if (!decomposer.getQueue().isEmpty()) {
                     try {
                         HttpBean http = httpQueue.take();
                         log.debug("HttpBean构造完成:" + http.toString());
                         log.debug("剩余httpbean共:" + httpQueue.size());
                         producer.ProduceScan(http);
-                        divider.scan();
+                        log.debug("开始扫描"+http.getUrl()+http.getPath()+" "+http.getMethod());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

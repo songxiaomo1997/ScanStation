@@ -23,7 +23,7 @@ public class ActiveProducer implements Producer<PayloadBean> {
     //将通过httpBean组装rule返回一个Scanerbeanlist同时将生成的scanerBean放入到分配器
     @Override
     public void ProduceScan(HttpBean http) {
-        log.info("开始构造payload");
+        log.debug("开始构造payload");
         Payload payload = new Payload();
         for (VulBean vul : this.vulBeanArrayList) {
 
@@ -38,7 +38,7 @@ public class ActiveProducer implements Producer<PayloadBean> {
 
             divider.addQueue(payloadBean);
             log.debug("构造器构造paylaodbean完成:" + payloadBean.toString());
-            log.info("构造器构造rule"+payloadBean.getRuleName()+"完成");
+            log.debug("构造器构造rule"+payloadBean.getRuleName()+"完成");
         }
     }
 

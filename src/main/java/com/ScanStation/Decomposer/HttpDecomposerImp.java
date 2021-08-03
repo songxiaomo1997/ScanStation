@@ -77,7 +77,7 @@ public class HttpDecomposerImp implements Decomposer<HttpBean> {
     public Boolean isProduce(FullHttpRequest request, Channel clientChannel) {
         for (String target : targets) {
             if (target.equalsIgnoreCase("*") || getUrl(request, clientChannel).contains(target)) {
-                log.info("url:"+request.method().name() + " " + getUrl(request, clientChannel)+" "+getParam(request));
+                log.info("url:"+request.method().name() + " " + getUrl(request, clientChannel)+request.uri().split("\\?")[0]+" "+getParam(request));
                 return true;
             }
         }
