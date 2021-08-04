@@ -141,7 +141,7 @@ public class HttpDecomposerImp implements Decomposer<HttpBean> {
                 try {
                     if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.FileUpload) {
                         FileUpload fileUpload = (FileUpload) data;
-                        String basePath = "/Users/song/Documents/GitHub/ScanStation/src/main/resources/";
+                        String basePath = "/Users/song/Documents/GitHub/ScanStation/src/main/resources/";//提取为配置文件
                         String fileName = fileUpload.getFilename();
                         if (fileUpload.isCompleted()) {
                             //保存到磁盘

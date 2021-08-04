@@ -15,10 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -193,7 +190,7 @@ public final class CommonOkHttpClient {
             responseMap.put("time", "0");
             return responseMap;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.debug(Arrays.toString(e.getStackTrace()));
             log.error("检测目标网络错误:" + request.url());
             Map<String, String> responseMap = new HashMap<>();
             responseMap.put("status", "network error");

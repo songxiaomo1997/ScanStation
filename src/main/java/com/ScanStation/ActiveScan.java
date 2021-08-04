@@ -60,6 +60,7 @@ public class ActiveScan {
 
         //开始扫描
         divider.scan();
+        log.info("----------------主动扫描完成----------------");
     }
 
     //用于获取httpbean
