@@ -11,7 +11,7 @@ public abstract class FullResponseIntercept extends HttpProxyIntercept {
     /**
      * default max content length size is 8MB
      */
-    private static final int DEFAULT_MAX_CONTENT_LENGTH = 1024 * 1024 * 8;
+    private static final int DEFAULT_MAX_CONTENT_LENGTH = 1024 * 1024 * 1000;
 
     private int maxContentLength;
 

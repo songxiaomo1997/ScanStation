@@ -5,11 +5,16 @@ import com.google.gson.*;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.multipart.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.lang.CharEncoding;
 import org.jetbrains.annotations.TestOnly;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -40,7 +45,7 @@ public class HttpDecomposerImp implements Decomposer<HttpBean> {
         Map<String, String> header = getHeader(request);
         String paramType = getParamType(request);
 
-        if (getParam(request).equals("")){
+        if (getParam(request).equals("")) {
             log.info("无参数或者为静态文件不扫描 " + method + " " + url + path + " " + getParam(request));
             return null;
         }
@@ -77,7 +82,7 @@ public class HttpDecomposerImp implements Decomposer<HttpBean> {
     public Boolean isProduce(FullHttpRequest request, Channel clientChannel) {
         for (String target : targets) {
             if (target.equalsIgnoreCase("*") || getUrl(request, clientChannel).contains(target)) {
-                log.info("url:"+request.method().name() + " " + getUrl(request, clientChannel)+request.uri().split("\\?")[0]+" "+getParam(request));
+                log.info("url:" + request.method().name() + " " + getUrl(request, clientChannel) + request.uri().split("\\?")[0] + " " + getParam(request));
                 return true;
             }
         }
@@ -107,10 +112,11 @@ public class HttpDecomposerImp implements Decomposer<HttpBean> {
      * Multi
      **/
     private String getParamType(FullHttpRequest request) {
-        String param = getParam(request);
+
         if (isMultipart(request)) {
             return "MULT";
         }
+        String param = getParam(request);
         if (isJson(param)) {
             return "JSON";
         }
@@ -127,12 +133,36 @@ public class HttpDecomposerImp implements Decomposer<HttpBean> {
      * GET类请求和POST取值不同
      **/
     private String getParam(FullHttpRequest request) {
-        String param = "";
-        if (request.uri().contains("?")) {
-            param += request.uri().split("\\?")[1];
+        StringBuilder param = new StringBuilder();
+        if (request.headers().get(HttpHeaderNames.CONTENT_TYPE) != null && request.headers().get(HttpHeaderNames.CONTENT_TYPE).toLowerCase().startsWith("multipart/")) {
+            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(new DefaultHttpDataFactory(false), request, Charsets.toCharset(CharEncoding.UTF_8));
+            List<InterfaceHttpData> datas = decoder.getBodyHttpDatas();
+            for (InterfaceHttpData data : datas) {
+                try {
+                    if (data.getHttpDataType() == InterfaceHttpData.HttpDataType.FileUpload) {
+                        FileUpload fileUpload = (FileUpload) data;
+                        String basePath = "/Users/song/Documents/GitHub/ScanStation/src/main/resources/";
+                        String fileName = fileUpload.getFilename();
+                        if (fileUpload.isCompleted()) {
+                            //保存到磁盘
+                            fileUpload.renameTo(new File(basePath + fileName));
+                        }
+                        param.append(data.getName()).append("<").append(fileName).append(">=").append(fileName).append("&");
+                    } else {
+                        param.append(data.getName()).append("=").append(((Attribute) data).getValue()).append("&");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            param.deleteCharAt(param.length()-1);
+        } else {
+            if (request.uri().contains("?")) {
+                param.append(request.uri().split("\\?")[1]);
+            }
+            param.append(request.content().toString(Charset.defaultCharset()));
         }
-        param += request.content().toString(Charset.defaultCharset());
-        return param;
+        return param.toString();
     }
 
     /**

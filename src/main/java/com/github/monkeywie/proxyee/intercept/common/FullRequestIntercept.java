@@ -6,15 +6,16 @@ import com.github.monkeywie.proxyee.intercept.HttpProxyIntercept;
 import com.github.monkeywie.proxyee.intercept.HttpProxyInterceptPipeline;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.*;
+import io.netty.util.ReferenceCountUtil;
 
 public abstract class FullRequestIntercept extends HttpProxyIntercept {
 
     /**
      * default max content length size is 8MB
      */
-    private static final int DEFAULT_MAX_CONTENT_LENGTH = 1024 * 1024 * 8;
+    private static final int DEFAULT_MAX_CONTENT_LENGTH = 1024 * 1024 * 1024;
 
-    private int maxContentLength;
+    private int maxContentLength = DEFAULT_MAX_CONTENT_LENGTH;
 
     public Decomposer getDecomposer() {
         return decomposer;
@@ -51,6 +52,7 @@ public abstract class FullRequestIntercept extends HttpProxyIntercept {
             clientChannel.pipeline().addAfter("decompress", "aggregator", new HttpObjectAggregator(maxContentLength));
             //重新过一遍处理器链
             clientChannel.pipeline().fireChannelRead(httpRequest);
+
             return;
         }
         pipeline.beforeRequest(clientChannel, httpRequest);

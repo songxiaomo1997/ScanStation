@@ -55,7 +55,7 @@ public class PassiveDivider implements Divider<PayloadBean> {
                         log.debug(payloadBean.toString());
                         log.debug(payloadBean.getRuleName() + "开始扫描" + payloadBeanLinkedBlockingQueue.size());
                         Futures.put(es.submit(scanner.scan(payloadBean)));
-                        log.info("扫描完成:"+payloadBean.getNormalRequest().getMethod()+" "+payloadBean.getNormalRequest().getUrl()+" "+payloadBean.getNormalRequest().getParam());
+                        log.info("扫描完成:"+payloadBean.getNormalRequest().getMethod()+" "+payloadBean.getNormalRequest().getUrl()+" "+payloadBean.getNormalRequest().getParam()+" "+payloadBean.getNormalRequest().getType());
                         log.info("scanned:"+i+"---pending:"+payloadBeanLinkedBlockingQueue.size());
                         i.getAndIncrement();
                     } catch (InterruptedException e) {

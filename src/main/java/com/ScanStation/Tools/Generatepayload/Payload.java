@@ -74,55 +74,6 @@ public class Payload {
         return scanBean;
     }
 
-    private ArrayList<ScanBean> payloadsGet(String param, HttpBean http) {
-        ArrayList<ScanBean> scanner = new ArrayList<>();
-        int index = 0;
-        for (String scanParam : param.split("&")) {
-            for (Map<String, String> payloadAndexpression : rule.getPayloads()) {
-
-
-                //漏洞参数
-                Map<String, Object> params = new HashMap<>();
-
-                //参数添加
-                Map<String, Object> tmpMap = new HashMap<>();
-                http.getParams().forEach(tmpMap::put);
-                params.putAll(tmpMap);
-
-                //添加payload生成map
-                String payload = payloadAndexpression.get("payload");
-                if ("Form".equalsIgnoreCase(rule.getType()) || "Multi".equalsIgnoreCase(rule.getType())) {
-                    params = rule.getParams();
-                    String[] var = scanParam.split("=");
-                    params.put(var[0], var.length > 1 ? var[1] + payload : payload); //如果有参数直接在参数后加入没有则直接加入
-
-                } else if ("Json".equalsIgnoreCase(rule.getType())) {
-                    replaceJson replaceJson = new replaceJson();
-                    params = replaceJson.replace(rule.getOriginalParam(), scanParam, payload);
-                }
-
-
-                //header头添加
-                Map<String, String> header = new HashMap<>();
-                header.putAll(http.getHeader());
-                header.putAll(rule.getHeader());
-
-                //ScanBean生成
-                ScanBean scb = new ScanBean();
-                scb.setUrl(http.getUrl() + rule.getPath());
-                scb.setName("payload" + index);
-                scb.setMethod(rule.getMethod());
-                scb.setHeader(header);
-                scb.setParam(params);
-                scb.setType(http.getParamType() == null ? rule.getType() : http.getParamType());
-                scb.setExpression(payloadAndexpression.get("expression"));
-                scanner.add(scb);
-                index++;
-            }
-        }
-
-        return scanner;
-    }
 
     private ArrayList<ScanBean> payloadsGetActive(ArrayList<ScanBean> scanner) {
         int i = scanner.size();
@@ -137,7 +88,7 @@ public class Payload {
 
                 //添加payload生成map
                 String tmp = payload.get("payload");
-                if ("Form".equalsIgnoreCase(rule.getType()) || "Multi".equalsIgnoreCase(rule.getType())) {
+                if ("Form".equalsIgnoreCase(rule.getType()) || "Mult".equalsIgnoreCase(rule.getType())) {
                     params = rule.getParams();
                     String[] var = scanParam.split("=");
                     params.put(var[0], var.length > 1 ? var[1] + tmp : tmp); //如果有参数直接在参数后加入没有则直接加入

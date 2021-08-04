@@ -8,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import okhttp3.FormBody.Builder;
 import okhttp3.internal.Util;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.TestOnly;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -46,11 +48,15 @@ public final class CommonOkHttpClient {
 
     public Map<String, String> request(ScanBean scb) {
         Map<String, String> response = new HashMap<String, String>();
+        log.debug(scb.toString());
         if (scb.getMethod().equalsIgnoreCase("GET")) {
             return get(scb.getUrl(), scb.getParam(), scb.getHeader());
         } else if (scb.getMethod().equalsIgnoreCase("POST")) {
-            return doPost(scb.getUrl(), scb.getParam(), scb.getHeader(), scb.getType());
-
+            if (scb.getType().equalsIgnoreCase("MULT")) {
+                return Multipost(scb.getUrl(), scb.getParam(), scb.getHeader());
+            } else {
+                return doPost(scb.getUrl(), scb.getParam(), scb.getHeader(), scb.getType());
+            }
         } else {
             response.put("info", "not Method");
             return response;
@@ -76,20 +82,20 @@ public final class CommonOkHttpClient {
         return sendRequest(request);
     }
 
-    public <T extends UploadFileBase> Map<String, String> Multipost(String url, Map<String, Object> prarm, Map<String, String> headerExt, List<T> files) {
+
+    public <T extends UploadFileBase> Map<String, String> Multipost(String url, Map<String, Object> prarm, Map<String, String> headerExt) {
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);
         if (prarm != null) {
-            prarm.forEach((k, v) -> builder.addFormDataPart(k, String.valueOf(v)));
-        }
-        if (files != null) {
-            files.stream().forEach((file) -> {
-                if (file instanceof UploadFile) {
-                    UploadFile fileTmp = (UploadFile) file;
-                    builder.addFormDataPart(file.getPrarmName(), fileTmp.getFile().getName(), RequestBody.create(MediaType.parse(fileTmp.getMediaType()), fileTmp.getFile()));
-                } else if (file instanceof UploadByteFile) {
-                    UploadByteFile fileTmp = (UploadByteFile) file;
-                    builder.addFormDataPart(file.getPrarmName(), fileTmp.getFileName(), RequestBody.create(MediaType.parse(fileTmp.getMediaType()), fileTmp.getFileBytes()));
+            String basePath = "/Users/song/Documents/GitHub/ScanStation/src/main/resources/";
+            prarm.forEach((k, v) -> {
+                if (k.contains("<")) {
+                    String filename = k.substring(k.indexOf("<") + 1, k.indexOf(">"));
+                    File file = new File(basePath +"/"+ filename);
+                    RequestBody requestBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+                    builder.addFormDataPart(k.substring(0, k.indexOf("<")), String.valueOf(v), requestBody);
+                } else {
+                    builder.addFormDataPart(k, String.valueOf(v));
                 }
             });
         }
@@ -97,14 +103,17 @@ public final class CommonOkHttpClient {
         MultipartBody uploadBody = builder.build();
         Request.Builder reqBuilder = new Request.Builder().post(uploadBody).url(url);
 
-        if (headerExt.get("Accept-Encoding").contains("gzip")) {
-            headerExt.replace("Accept-Encoding", headerExt.get("Accept-Encoding").replaceAll("gzip", ""));
+        //添加请求头
+        if (headerExt.containsKey("Accept-Encoding")) {
+            if (headerExt.get("Accept-Encoding").contains("gzip")) {
+                headerExt.replace("Accept-Encoding", headerExt.get("Accept-Encoding").replaceAll("gzip", ""));
+            }
         }
-        if (headerExt != null && headerExt.size() > 0) {
+        if (headerExt.size() > 0) {
             headerExt.forEach(reqBuilder::addHeader);
         }
         Request request = reqBuilder.build();
-        return (Map) sendRequest(request);
+        return sendRequest(request);
     }
 
     public Map<String, String> doPost(String url, Map<String, Object> prarm, Map<String, String> headerExt, String type) {
@@ -142,11 +151,6 @@ public final class CommonOkHttpClient {
                     prarm.forEach((k, v) -> builder.add(k, String.valueOf(v)));
                     body = builder.build();
                 }
-            } else if (type.equalsIgnoreCase("Multi")) {
-                MultipartBody.Builder builder = new MultipartBody.Builder();
-                builder.setType(MultipartBody.FORM);
-                prarm.forEach((k, v) -> builder.addFormDataPart(k, String.valueOf(v)));
-                body = builder.build();
             }
         }
         return body;

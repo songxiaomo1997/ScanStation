@@ -30,6 +30,10 @@ public class UploadFile extends UploadFileBase {
      */
     private File file;
 
+    public UploadFile(String s) {
+        super();
+    }
+
     public File getFile() {
         return file;
     }

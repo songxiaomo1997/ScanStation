@@ -71,7 +71,7 @@ public class HttpProxyServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
             HttpRequest request = (HttpRequest) msg;
-            log.debug("handleRequest:"+request.headers().get(HttpHeaderNames.HOST) + request.uri());
+            log.debug("handleRequest:" + request.uri());
 
             // 第一次建立连接取host和端口号和处理代理握手
             if (status == 0) {
@@ -159,6 +159,7 @@ public class HttpProxyServerHandler extends ChannelInboundHandlerAdapter {
         ctx.channel().close();
         exceptionHandle.beforeCatch(ctx.channel(), cause);
     }
+
 
     private boolean authenticate(ChannelHandlerContext ctx, HttpRequest request) {
         if (serverConfig.getAuthenticationProvider() != null) {

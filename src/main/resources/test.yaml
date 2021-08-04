@@ -3,7 +3,7 @@ rules:
   method: POST #GET|POST
   path: /vul/sql/Json #漏洞路径 /api/geturl/127.0.0.1*
   originalParam: "{\"code\":200,\"msg\":1,\"muser\":[{\"name\":\"zhangsan\",\"age\":\"10\",\"phone\":\"11111\",\"email\":\"11111@11.com\"},{\"name\":\"lisi\",\"age\":\"20\",\"phone\":\"22222\",\"email\":\"22222@22.com\"}]}"
-  vulParam: msg&name
+  vulParam: msg&name #upload<file>=WechatIMG33192.jpeg
   header:
     test-Post: test-Json123
     tmp : tmp12321313213213
