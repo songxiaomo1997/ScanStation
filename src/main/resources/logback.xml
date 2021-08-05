@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
-    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <!--高亮日志用于控制台输出-->
     <property name="ENCODER_PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss:SS} %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{100}) - %cyan(%msg%n)"/>
     <!-- 控制台输出 -->
@@ -9,12 +9,10 @@
             <level>info</level>
         </filter>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <!--            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %boldMagenta(%-5level %logger{50}) : %msg%n</pattern>-->
             <pattern>${ENCODER_PATTERN}</pattern>
         </encoder>
     </appender>
-    <!-- 按照每天生成日志文件 -->
+    <!-- 全量日志文件 -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
@@ -31,7 +29,7 @@
             <MaxFileSize>10MB</MaxFileSize>
         </triggeringPolicy>
     </appender>
-
+    <!--扫描过的URL-->
     <appender name="SCANED" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator>
@@ -62,4 +60,5 @@
         <appender-ref ref="FILE"/>
         <appender-ref ref="SCANED"/>
     </root>
+
 </configuration>
