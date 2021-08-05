@@ -45,7 +45,7 @@ public class ActiveDivider implements Divider<PayloadBean> {
                 try {
                     payloadBean = payloadBeanLinkedBlockingQueue.take();
                     log.debug(payloadBean.toString());
-                    log.debug(payloadBean.getRuleName() + "开始扫描" + payloadBeanLinkedBlockingQueue.size());
+                    log.info(payloadBean.getRuleName() + "开始扫描还有" + payloadBeanLinkedBlockingQueue.size());
                     Futures.put(es.submit(scanner.scan(payloadBean)));
                 } catch (InterruptedException e) {
                     log.error("扫描队列获取失败");

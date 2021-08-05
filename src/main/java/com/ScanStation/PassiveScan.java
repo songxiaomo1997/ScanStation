@@ -77,7 +77,7 @@ public class PassiveScan {
                         log.debug("HttpBean构造完成:" + http.toString());
                         log.debug("剩余httpbean共:" + httpQueue.size());
                         producer.ProduceScan(http);
-                        log.debug("开始扫描"+http.getUrl()+http.getPath()+" "+http.getMethod());
+                        log.info("开始扫描"+http.getUrl()+http.getPath()+" "+http.getMethod());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
