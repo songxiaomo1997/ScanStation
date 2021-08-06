@@ -20,12 +20,8 @@
 - [ ] 支持grpc扫描
 - [ ] 分布式部署
 
-### 使用方法
-```
-java -jar ScanStation -u|--url [目标地址] --pocPath [需要加载的poc路径] -c|--cookie [(可选)全局cookie] -gP|--globalParam[(可选)全局参数] -hC|--headerConfig [(可选)全局请求头配置文件路径] -t 
-```
-####参数说明
-主动模式 active
+###Usage
+####主动模式 active
 ```
 -u | --url 目标地址
 --target  多目标
@@ -35,7 +31,7 @@ java -jar ScanStation -u|--url [目标地址] --pocPath [需要加载的poc路�
 -t ｜--threads 多线程线程数
 --pocPath poc路径
 ```
-扫描http://www.test.com
+扫描http://www.test.com 
 ```
 java -jar ScanStation.jar -active -u http://www.test.com --pocPath /Users/ScanStation/
 ```
@@ -49,11 +45,11 @@ http://test.test.com
 ```
 java -jar ScanStation.jar -active --target target.txt --pocPath /Users/ScanStation/
 ```
-扫描http://www.test.com设置cookie和全局参数
+扫描http://www.test.com 设置cookie和全局参数
 ```
 java -jar ScanStation.jar -active -u http://www.test.com -c "sid=123456789" -gP "token=123&csrf_token=321" --pocPath /Users/ScanStation/
 ```
-扫描http://www.test.com设置请求头和线程数为20
+扫描http://www.test.com 设置请求头和线程数为20
 headconfig.yaml
 ```
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36
@@ -63,7 +59,8 @@ ScanStation: ScanStation v1.0
 ```
 java -jar ScanStation.jar -active -u http://www.test.com -hC headconfig.yaml -t 20 --pocPath /Users/ScanStation/
 ```
-被动模式 passive
+
+####被动模式 passive
 ```
 -p｜--Proxy 代理端口地址
 -u | --url 目标url
@@ -79,7 +76,6 @@ java -jar ScanStation.jar -passive -p 4321 --pocPath /Users/ScanStation/ -t 20
 ```
 java -jar ScanStation.jar -passive -p 4321 -u "test.test.com" --pocPath /Users/ScanStation/
 ```
-
 扫描多个url
 target.yaml
 ```
@@ -89,12 +85,6 @@ target.yaml
 ```
 ```
 java -jar ScanStation.jar -passive -p 4321 -target target.yaml --pocPath /Users/ScanStation/
-```
-
-#### 规则测试
-只会加载一个poc用于测试poc路径为文件路径,如poc路径为~/Dowloads/rules/test.yaml则填入即可
-```
-java -jar ScanStation -u [目标地址] -p [需要加载的poc路径] -debug
 ```
 
 ### poc说明

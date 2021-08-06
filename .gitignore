@@ -106,3 +106,4 @@ src/main/resources/.DS_Store
 .DS_Store
 .DS_Store
 src/main/java/com/ScanStation/Tools/testPassive.java
+src/main/resources/.log4j2.xml.icloud
