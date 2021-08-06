@@ -20,8 +20,8 @@
 - [ ] 支持grpc扫描
 - [ ] 分布式部署
 
-###Usage
-####主动模式 active
+### Usage
+#### 主动模式 active
 ```
 -u | --url 目标地址
 --target  多目标
@@ -60,7 +60,7 @@ ScanStation: ScanStation v1.0
 java -jar ScanStation.jar -active -u http://www.test.com -hC headconfig.yaml -t 20 --pocPath /Users/ScanStation/
 ```
 
-####被动模式 passive
+#### 被动模式 passive
 ```
 -p｜--Proxy 代理端口地址
 -u | --url 目标url
