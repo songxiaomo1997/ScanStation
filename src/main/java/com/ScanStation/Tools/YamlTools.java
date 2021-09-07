@@ -2,6 +2,7 @@ package com.ScanStation.Tools;
 
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,7 +28,7 @@ public class YamlTools<T> {
             log.error(filePath + "不存在");
             System.exit(0);
         }
-        Yaml yaml = new Yaml();
+        Yaml yaml = new Yaml(new SafeConstructor());
         return yaml.loadAs(inputStream, type);
     }
 
@@ -39,7 +40,7 @@ public class YamlTools<T> {
             log.error(this.filePath + "不存在");
             return null;
         }
-        Yaml yaml = new Yaml();
+        Yaml yaml = new Yaml(new SafeConstructor());
         T t = (T) yaml.loadAs(inputStream, type);
         return t;
     }

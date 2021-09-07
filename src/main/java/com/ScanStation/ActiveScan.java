@@ -11,6 +11,7 @@ import com.ScanStation.Producer.Producer;
 import com.ScanStation.Tools.YamlTools;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -87,7 +88,7 @@ public class ActiveScan {
             YamlTools<Map<String, String>> yamlTools = new YamlTools<Map<String, String>>(cmd.getHeaderConfig());
             header = yamlTools.load(Map.class);
         } else {
-            Yaml yaml = new Yaml();
+            Yaml yaml = new Yaml(new SafeConstructor());
             header = yaml.loadAs(ActiveScan.class.getResourceAsStream("/config/headconfig.yaml"), Map.class);
 
         }
