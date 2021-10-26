@@ -1,7 +1,12 @@
 package com.ScanStation.Bean;
 
 import com.beust.jcommander.Parameter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
+@Slf4j
 public class CommandBean {
     @Parameter(names = {"-active"},description = "主动扫描")
     private Boolean active = false;
@@ -52,8 +57,14 @@ public class CommandBean {
         this.passive = passive;
     }
 
-    public String getUrl() {
-        return url;
+    public String getUrl()  {
+        URL Url = null;
+        try {
+            Url = new URL(url);
+        } catch (MalformedURLException e) {
+            log.error("url错误");
+        }
+        return Url.getProtocol() +"://"+Url.getHost();
     }
 
     public void setUrl(String url) {

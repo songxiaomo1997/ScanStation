@@ -17,6 +17,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +68,15 @@ public class ActiveScan {
 
     //用于获取httpbean
     private HttpBean getHttp(String url) {
+        URL Url = null;
+        try {
+            Url = new URL(url);
+        } catch (MalformedURLException e) {
+            log.error("url错误");
+        }
+
         HttpBean http = new HttpBean();
-        http.setUrl(url);
+        http.setUrl(Url.getProtocol() +"://"+Url.getHost());
         http.setParam(cmd.getGlobalParam());
         //添加cookie
         SetHeader(http);
@@ -88,7 +97,8 @@ public class ActiveScan {
             YamlTools<Map<String, String>> yamlTools = new YamlTools<Map<String, String>>(cmd.getHeaderConfig());
             header = yamlTools.load(Map.class);
         } else {
-            Yaml yaml = new Yaml(new SafeConstructor());
+            //        Yaml yaml = new Yaml(new SafeConstructor()); //避免yaml反序列化
+            Yaml yaml = new Yaml();
             header = yaml.loadAs(ActiveScan.class.getResourceAsStream("/config/headconfig.yaml"), Map.class);
 
         }

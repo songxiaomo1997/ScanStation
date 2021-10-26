@@ -28,7 +28,8 @@ public class YamlTools<T> {
             log.error(filePath + "不存在");
             System.exit(0);
         }
-        Yaml yaml = new Yaml(new SafeConstructor());
+//        Yaml yaml = new Yaml(new SafeConstructor()); //避免yaml反序列化
+        Yaml yaml = new Yaml();
         return yaml.loadAs(inputStream, type);
     }
 
@@ -40,7 +41,8 @@ public class YamlTools<T> {
             log.error(this.filePath + "不存在");
             return null;
         }
-        Yaml yaml = new Yaml(new SafeConstructor());
+//        Yaml yaml = new Yaml(new SafeConstructor()); //避免yaml反序列化
+        Yaml yaml = new Yaml();
         T t = (T) yaml.loadAs(inputStream, type);
         return t;
     }
